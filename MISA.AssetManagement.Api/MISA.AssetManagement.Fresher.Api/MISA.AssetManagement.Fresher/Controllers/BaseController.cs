@@ -9,7 +9,7 @@ namespace MISA.AssetManagement.Fresher.Controllers
     /// </summary>
     /// <typeparam name="T">Entity type</typeparam>
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
     public abstract class BaseController<T> : Controller
     {
         protected readonly IBaseService<T> _baseService;

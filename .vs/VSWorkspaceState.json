@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\MISA.AssetManagement.Api",
+    "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api",
+    "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api\\MISA.AssetManagement.Core",
+    "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api\\MISA.AssetManagement.Core\\DTOs",
+    "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api\\MISA.AssetManagement.Core\\Enums",
+    "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api\\MISA.AssetManagement.Core\\Helpers",
+    "\\MISA.AssetManagement.Webapp"
+  ],
+  "SelectedNode": "\\MISA.AssetManagement.Api\\MISA.AssetManagement.Fresher.Api\\MISA.AssetManagement.Core\\Helpers",
+  "PreviewInSolutionExplorer": false
+}

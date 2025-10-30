@@ -1,4 +1,6 @@
-﻿using MISA.AssetManagement.Fresher.Middleware;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using MISA.AssetManagement.Fresher.Conventions;
+using MISA.AssetManagement.Fresher.Middleware;
 using MISA.Core.Entities;
 using MISA.Core.Interfaces.Repository;
 using MISA.Core.Interfaces.Service;
@@ -13,6 +15,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Cấu hình route
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new RouteTokenTransformerConvention(new LowercaseControllerTransformer()));
+});
 
 // Cấu hình Dapper - Tự động map snake_case sang camelCase
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -47,8 +55,10 @@ builder.Services.AddScoped<IFixedAssetRepository>(provider =>
 
 // Đăng ký Services
 builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
-
 builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
+builder.Services.AddScoped<IBaseService<Department>, DepartmentService>();
+builder.Services.AddScoped<IBaseService<FixedAssetCategory>, FixedAssetCategoryService>();
+
 
 // Thêm CORS
 builder.Services.AddCors(options =>
@@ -63,11 +73,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Middleware xử lý exception toàn cục
 app.UseMiddleware<ExceptionMiddleware>();
 
-
-// Configure the HTTP request pipeline.
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -78,6 +87,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

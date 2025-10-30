@@ -25,6 +25,19 @@ namespace MISA.Infrastructure.Reposiories
         }
 
         /// <summary>
+        /// Lấy tên cột code của bảng (convention: <TênBảng>Code)
+        /// CreatedBy: HMTuan (30/10/2025)
+        /// </summary>
+        /// <returns>Tên cột code</returns>
+        protected virtual string GetCodeColumnName()
+        {
+            // Convention: fixed_asset_categories -> fixed_asset_category_code
+            // departments -> department_code
+            var tableName = _tableName.TrimEnd('s'); // Bỏ 's' cuối
+            return $"{tableName}_code";
+        }
+
+        /// <summary>
         /// Lấy tất cả bản ghi
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
@@ -33,7 +46,7 @@ namespace MISA.Infrastructure.Reposiories
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var sql = $"SELECT * FROM {_tableName} WHERE is_active = 1";
+                var sql = $"SELECT * FROM {_tableName} WHERE is_active = 1 ORDER BY {GetCodeColumnName()} ASC";
                 return connection.Query<T>(sql);
             }
         }

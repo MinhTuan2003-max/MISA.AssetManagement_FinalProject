@@ -5,6 +5,7 @@ namespace MISA.AssetManagement.Fresher.Middleware
 {
     /// <summary>
     /// Middleware xử lý exception toàn cục
+    /// CreatedBy: HMTuan (28/10/2025)
     /// </summary>
     public class ExceptionMiddleware
     {

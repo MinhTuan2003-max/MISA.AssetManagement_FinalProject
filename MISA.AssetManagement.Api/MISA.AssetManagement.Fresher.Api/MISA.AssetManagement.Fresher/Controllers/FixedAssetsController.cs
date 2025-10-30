@@ -10,7 +10,7 @@ namespace MISA.AssetManagement.Fresher.Controllers
     /// CreatedBy: HMTuan (28/10/2025)
     /// </summary>
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
     public class FixedAssetsController : BaseController<FixedAsset>
     {
         private readonly IFixedAssetService _fixedAssetService;
