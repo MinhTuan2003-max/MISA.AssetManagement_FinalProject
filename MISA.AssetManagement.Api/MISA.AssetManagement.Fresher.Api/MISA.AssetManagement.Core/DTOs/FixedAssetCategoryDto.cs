@@ -20,5 +20,20 @@
         /// Tên loại tài sản cố định
         /// </summary>
         public string fixed_asset_category_name { get; set; }
+
+        /// <summary>
+        /// Tên viết tắt cho tài sản cố định
+        /// </summary>
+        public string? fixed_asset_category_short_name { get; set; }
+
+        /// <summary>
+        /// Thời gian sử dụng (năm)
+        /// </summary>
+        public int life_time { get; set; }
+
+        /// <summary>
+        /// Tỷ lệ hao mòn (%)
+        /// </summary>
+        public decimal depreciation_rate { get; set; }
     }
 }

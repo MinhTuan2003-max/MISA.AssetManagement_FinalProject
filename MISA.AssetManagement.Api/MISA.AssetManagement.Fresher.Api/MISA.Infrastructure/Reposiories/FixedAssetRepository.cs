@@ -3,11 +3,7 @@ using MISA.Core.DTOs;
 using MISA.Core.Entities;
 using MISA.Core.Interfaces.Repository;
 using MySqlConnector;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MISA.Infrastructure.Reposiories
 {
@@ -83,12 +79,20 @@ namespace MISA.Infrastructure.Reposiories
                 sql.Append("fa.fixed_asset_id, ");
                 sql.Append("fa.fixed_asset_code, ");
                 sql.Append("fa.fixed_asset_name, ");
-                sql.Append("fa.fixed_asset_category_name, ");
+                sql.Append("fa.department_code, ");
                 sql.Append("fa.department_name, ");
+                sql.Append("fa.fixed_asset_category_code, ");
+                sql.Append("fa.fixed_asset_category_name, ");
                 sql.Append("fa.quantity, ");
                 sql.Append("fa.cost, ");
-                sql.Append("(fa.depreciation_value * (YEAR(CURDATE()) - fa.tracked_year)) AS accumulated_depreciation, ");
-                sql.Append("(fa.cost - (fa.depreciation_value * (YEAR(CURDATE()) - fa.tracked_year))) AS remaining_value ");
+                sql.Append("fa.purchase_date, ");
+                sql.Append("fa.production_year, ");
+                sql.Append("fa.tracked_year, ");
+                sql.Append("fa.life_time, ");
+                sql.Append("fa.depreciation_rate, ");
+                sql.Append("fa.depreciation_value, ");
+                sql.Append("fa.depreciation_value AS accumulated_depreciation, ");
+                sql.Append("(fa.cost - fa.depreciation_value) AS remaining_value ");
                 sql.Append("FROM fixed_asset fa ");
                 sql.Append("WHERE fa.is_active = 1 ");
 
@@ -136,6 +140,7 @@ namespace MISA.Infrastructure.Reposiories
                 };
             }
         }
+
 
         /// <summary>
         /// Tạo mã tài sản tự động tăng

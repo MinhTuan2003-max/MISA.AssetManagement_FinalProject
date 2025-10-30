@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MISA.Core.Entities
 {
@@ -22,6 +24,12 @@ namespace MISA.Core.Entities
         /// Tên bộ phận sử dụng
         /// </summary>
         public string department_name { get; set; }
+
+        /// <summary>
+        /// Tên viết tắt của bộ phận
+        /// CreatedBy: HMTuan (30/10/2025)
+        /// </summary>
+        public string? department_short_name { get; set; }
 
         /// <summary>
         /// Mô tả chi tiết về bộ phận

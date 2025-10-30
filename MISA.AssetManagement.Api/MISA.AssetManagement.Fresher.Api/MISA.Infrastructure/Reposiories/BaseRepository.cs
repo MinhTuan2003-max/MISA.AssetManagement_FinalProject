@@ -47,7 +47,7 @@ namespace MISA.Infrastructure.Reposiories
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var sql = $"SELECT * FROM {_tableName} WHERE is_active = 1 ORDER BY {GetCodeColumnName()} ASC";
-                return connection.Query<T>(sql);
+                return connection.Query<T>(sql); //Sử dụng queryString
             }
         }
 

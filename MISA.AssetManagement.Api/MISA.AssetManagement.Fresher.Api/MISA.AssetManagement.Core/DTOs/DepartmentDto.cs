@@ -20,5 +20,11 @@
         /// Tên bộ phận sử dụng
         /// </summary>
         public string department_name { get; set; }
+
+        /// <summary>
+        /// Tên viết tắt của bộ phận
+        /// CreatedBy: HMTuan (30/10/2025)
+        /// </summary>
+        public string? department_short_name { get; set; }
     }
 }
