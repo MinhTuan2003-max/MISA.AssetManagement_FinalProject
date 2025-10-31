@@ -6,7 +6,7 @@
 
 // #region Import
 import { ref } from 'vue'
-import { exportToExcelWithHeaders } from '@/utils/excelExporter'
+import { exportToExcelWithHeaders } from '@/utils/excel/excelExporter.js'
 // #endregion
 
 // #region useExcelExport

@@ -26,7 +26,7 @@
           <MsSelect
             v-model="formData.department_code"
             :options="departmentOptions"
-            placeholder="Chọn bộ phận"
+            placeholder="Chọn mã bộ phận sử dụng"
             :error="errors.department_code"
             tabindex="2"
             @input="notifyFormChange"
@@ -45,7 +45,7 @@
           <MsSelect
             v-model="formData.fixed_asset_category_code"
             :options="categoryOptions"
-            placeholder="Chọn loại tài sản"
+            placeholder="Chọn mã loại tài sản"
             :error="errors.fixed_asset_category_code"
             tabindex="3"
             @input="notifyFormChange"
@@ -82,7 +82,14 @@
         </div>
         <div class="form-group">
           <label class="form-label">Tỷ lệ hao mòn (%) <span class="required">*</span></label>
-          <MsInput :model-value="formData.depreciation_rate" placeholder="0" readonly tabindex="-1" />
+          <MsNumberInput
+            v-model="formData.depreciation_rate"
+            :min="0"
+            format="currency"
+            :error="errors.depreciation_rate"
+            tabindex="5"
+            @input="notifyFormChange"
+          />
         </div>
       </div>
 
@@ -109,22 +116,13 @@
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Năm bắt đầu sử dụng</label>
-          <MsInput
-            :model-value="formData.production_year"
-            placeholder="Tự động"
-            readonly
-            tabindex="-1"
-          />
+          <label class="form-label">Năm theo dõi</label>
+          <MsInput :model-value="formData.tracked_year" placeholder="Tự động" readonly tabindex="-1" />
         </div>
       </div>
 
       <!-- Row 6 -->
       <div class="form-row form-row-bottom">
-        <div class="form-group">
-          <label class="form-label">Năm theo dõi</label>
-          <MsInput :model-value="formData.tracked_year" placeholder="Tự động" readonly tabindex="-1" />
-        </div>
         <div class="form-group">
           <label class="form-label">Số năm sử dụng <span class="required">*</span></label>
           <MsNumberInput
@@ -157,6 +155,7 @@ import MsInput from '@/components/ms-input/MsInput.vue'
 import MsSelect from '@/components/ms-select/MsSelect.vue'
 import MsDatePicker from '@/components/ms-date/MsDateInput.vue'
 import MsNumberInput from '@/components/ms-number-input/MsNumberInput.vue'
+import { validateAssetForm } from '@/utils/validate/validateAssetForm.js'
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -318,38 +317,13 @@ function loadInitialData(data) {
   }
 }
 
-function validateForm() {
-  errors.value = {}
-  if (!formData.value.fixed_asset_name?.trim()) {
-    errors.value.fixed_asset_name = 'Tên tài sản không được để trống'
-  }
-  if (!formData.value.department_code) {
-    errors.value.department_code = 'Mã bộ phận sử dụng không được để trống'
-  }
-  if (!formData.value.fixed_asset_category_code) {
-    errors.value.fixed_asset_category_code = 'Mã loại tài sản không được để trống'
-  }
-  if (!formData.value.quantity || formData.value.quantity < 1) {
-    errors.value.quantity = 'Số lượng phải lớn hơn 0'
-  }
-  if (formData.value.cost === null || formData.value.cost === undefined || formData.value.cost < 0) {
-    errors.value.cost = 'Nguyên giá không được âm'
-  }
-  if (!formData.value.purchase_date) {
-    errors.value.purchase_date = 'Ngày mua không được để trống'
-  }
-  if (!formData.value.start_using_date) {
-    errors.value.start_using_date = 'Ngày bắt đầu sử dụng không được để trống'
-  }
-  return Object.keys(errors.value).length === 0
-}
-
-function notifyFormChange() {
-  // Local state update - không cần emit, chỉ update ref
-}
-
 function handleSubmit() {
-  if (!validateForm()) return
+  const { errors: validationErrors, isValid } = validateAssetForm(formData.value)
+
+  if (!isValid) {
+    errors.value = validationErrors
+    return
+  }
 
   const submitData = {
     fixed_asset_code: formData.value.fixed_asset_code.trim(),
@@ -366,11 +340,15 @@ function handleSubmit() {
   emit('submit', submitData)
 }
 
+function notifyFormChange() {
+  // Local state update
+}
+
 function handleCancel() {
-  // Pass deep copy của formData
   emit('close', JSON.parse(JSON.stringify(formData.value)))
 }
 </script>
+
 
 <style scoped>
 /* CSS giữ nguyên từ trước */

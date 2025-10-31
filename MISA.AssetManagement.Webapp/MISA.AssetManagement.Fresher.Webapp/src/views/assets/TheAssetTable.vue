@@ -32,7 +32,7 @@
 <script setup>
 import MsDataTable from '@/components/ms-table/MsDataTable.vue'
 import { computed } from 'vue'
-import { fixedAssetColumns } from '@/utils/fixedAssetColumns.js'
+import { fixedAssetColumns } from '@/utils/component/fixedAssetColumns.js'
 
 const props = defineProps({
   candidates: { type: Array, default: () => [] },

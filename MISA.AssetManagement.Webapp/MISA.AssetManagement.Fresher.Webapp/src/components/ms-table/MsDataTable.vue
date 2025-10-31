@@ -183,7 +183,7 @@
 // #region Import
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import MsContextMenu from '@/components/ms-context-menu/MsContextMenu.vue'
-import { contexMenuItem } from '@/utils/contexMenuItem.js'
+import { contexMenuItem } from '@/utils/component/contexMenuItem.js'
 // #endregion
 
 // #region Props

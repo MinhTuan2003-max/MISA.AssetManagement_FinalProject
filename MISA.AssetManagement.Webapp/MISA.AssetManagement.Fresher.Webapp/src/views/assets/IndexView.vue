@@ -176,7 +176,7 @@ import TheAssetForm from '@/views/assets/TheAssetForm.vue'
 import MsToastNotification from '@/components/ms-toast/MsToast.vue'
 import { useExcelExport } from '@/composables/useExcelExport.js'
 import { FixedAsset } from '@/domains/models/FixedAsset'
-import { debounce } from '@/utils/debounce'
+import { debounce } from '@/utils/component/debounce.js'
 
 //#region Composables
 const {
@@ -258,19 +258,19 @@ function removeToast(id) {
 }
 
 function toastSuccess(message) {
-  return showToast({ type: 'success', title: 'Thành công!', message, duration: 3000 })
+  return showToast({ type: 'success', message, duration: 3000 })
 }
 
 function toastUpdate(message) {
-  return showToast({ type: 'update', title: 'Cập nhật!', message, duration: 3000 })
+  return showToast({ type: 'update', message, duration: 3000 })
 }
 
 function toastDelete(message) {
-  return showToast({ type: 'delete', title: 'Đã xóa!', message, duration: 5000 })
+  return showToast({ type: 'delete', message, duration: 5000 })
 }
 
 function toastError(message) {
-  return showToast({ type: 'error', title: 'Lỗi!', message, duration: 4000 })
+  return showToast({ type: 'error', message, duration: 4000 })
 }
 //#endregion
 
