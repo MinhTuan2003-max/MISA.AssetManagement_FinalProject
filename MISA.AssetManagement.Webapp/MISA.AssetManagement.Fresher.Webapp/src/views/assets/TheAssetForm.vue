@@ -136,7 +136,12 @@
         </div>
         <div class="form-group">
           <label class="form-label">Giá trị hao mòn năm <span class="required">*</span></label>
-          <MsInput :model-value="formData.depreciation_value" placeholder="Tự động" readonly tabindex="-1" />
+          <MsInput
+            :model-value="formatCurrency(formData.depreciation_value)"
+            placeholder="Tự động"
+            readonly
+            tabindex="-1"
+          />
         </div>
       </div>
     </div>
@@ -347,6 +352,12 @@ function notifyFormChange() {
 function handleCancel() {
   emit('close', JSON.parse(JSON.stringify(formData.value)))
 }
+
+function formatCurrency(value) {
+  if (value == null || value === '') return ''
+  return new Intl.NumberFormat('vi-VN').format(value)
+}
+
 </script>
 
 

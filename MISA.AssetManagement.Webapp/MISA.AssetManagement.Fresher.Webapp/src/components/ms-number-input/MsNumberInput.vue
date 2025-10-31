@@ -13,7 +13,6 @@
         @blur="handleBlur"
       />
 
-      <!-- Spinner buttons - dùng SVG icon -->
       <div v-if="!readonly && !disabled" class="spinner-buttons">
         <button
           type="button"
@@ -35,71 +34,25 @@
 </template>
 
 <script setup>
-/**
- * @fileoverview Number Input Component
- * @description Input component cho số với format và validation
- * @created by HMTuan (30/10/2025)
- */
-
 import { computed, ref, watch } from 'vue'
 
-/**
- * Props
- */
 const props = defineProps({
-  modelValue: {
-    type: [Number, String],
-    default: 0
-  },
-  min: {
-    type: Number,
-    default: null
-  },
-  max: {
-    type: Number,
-    default: null
-  },
-  step: {
-    type: Number,
-    default: 1
-  },
-  format: {
-    type: String,
-    default: 'number', // 'number' | 'currency'
-    validator: (value) => ['number', 'currency'].includes(value)
-  },
-  placeholder: {
-    type: String,
-    default: '0'
-  },
-  error: {
-    type: String,
-    default: ''
-  },
-  readonly: {
-    type: Boolean,
-    default: false
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  }
+  modelValue: { type: [Number, String], default: 0 },
+  min: { type: Number, default: null },
+  max: { type: Number, default: null },
+  step: { type: Number, default: 1 },
+  format: { type: String, default: 'number', validator: (value) => ['number', 'currency'].includes(value) },
+  placeholder: { type: String, default: '0' },
+  error: { type: String, default: '' },
+  readonly: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false }
 })
 
-/**
- * Emits
- */
 const emit = defineEmits(['update:modelValue'])
 
-/**
- * State
- */
 const isFocused = ref(false)
 const displayValue = ref('')
 
-/**
- * Computed
- */
 const hasError = computed(() => !!props.error)
 
 const numericValue = computed(() => {
@@ -109,101 +62,71 @@ const numericValue = computed(() => {
   return isNaN(value) ? 0 : value
 })
 
-/**
- * Format number theo locale Việt Nam
- */
 function formatNumber(value) {
   if (value === null || value === undefined || value === '') return ''
-
   const num = parseFloat(value)
   if (isNaN(num)) return ''
-
-  if (props.format === 'currency') {
-    return new Intl.NumberFormat('vi-VN').format(num)
-  }
-
   return new Intl.NumberFormat('vi-VN').format(num)
 }
 
-/**
- * Parse string về number
- */
 function parseNumber(str) {
   if (!str) return 0
-  const cleaned = String(str).replace(/[^\d.-]/g, '')
+  const cleaned = String(str).replace(/\./g, '').replace(/[^\d-]/g, '')
   const num = parseFloat(cleaned)
   return isNaN(num) ? 0 : num
 }
 
-/**
- * Validate và clamp value
- */
 function validateValue(value) {
   let num = parseNumber(value)
-
-  if (props.min !== null && num < props.min) {
-    num = props.min
-  }
-
-  if (props.max !== null && num > props.max) {
-    num = props.max
-  }
-
+  if (props.min !== null && num < props.min) num = props.min
+  if (props.max !== null && num > props.max) num = props.max
   return num
 }
 
-/**
- * Handle input change
- */
 function handleInput(e) {
-  const value = e.target.value
-  displayValue.value = value
+  let inputValue = e.target.value
 
-  const num = parseNumber(value)
+  // Chặn nhập ký tự không hợp lệ (chỉ cho số, dấu chấm, dấu trừ)
+  inputValue = inputValue.replace(/[^0-9.-]/g, '')
+  e.target.value = inputValue
+
+  const num = parseNumber(inputValue)
+
+  if (inputValue === '' || inputValue === '-') {
+    displayValue.value = inputValue
+    emit('update:modelValue', 0)
+    return
+  }
+
+  const formatted = formatNumber(num)
+  displayValue.value = formatted
   emit('update:modelValue', num)
 }
 
-/**
- * Handle focus
- */
 function handleFocus() {
   isFocused.value = true
-  displayValue.value = String(numericValue.value)
+  displayValue.value = formatNumber(numericValue.value)
 }
 
-/**
- * Handle blur
- */
 function handleBlur() {
   isFocused.value = false
-
   const validated = validateValue(displayValue.value)
   emit('update:modelValue', validated)
-
   displayValue.value = formatNumber(validated)
 }
 
-/**
- * Increment value
- */
 function increment() {
   const newValue = numericValue.value + props.step
   const validated = validateValue(newValue)
   emit('update:modelValue', validated)
 }
 
-/**
- * Decrement value
- */
 function decrement() {
   const newValue = numericValue.value - props.step
   const validated = validateValue(newValue)
   emit('update:modelValue', validated)
 }
 
-/**
- * Watch modelValue để update display
- */
 watch(() => props.modelValue, (newVal) => {
   if (!isFocused.value) {
     displayValue.value = formatNumber(newVal)
@@ -212,6 +135,7 @@ watch(() => props.modelValue, (newVal) => {
 </script>
 
 <style scoped>
+/* CSS giữ nguyên */
 .number-input-wrapper {
   display: flex;
   flex-direction: column;
@@ -256,12 +180,6 @@ watch(() => props.modelValue, (newVal) => {
 
 .number-input-field:focus {
   outline: none;
-}
-
-.number-input-field:hover {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .number-input-field:disabled,
