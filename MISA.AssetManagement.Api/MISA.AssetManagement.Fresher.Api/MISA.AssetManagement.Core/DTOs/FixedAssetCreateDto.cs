@@ -37,6 +37,21 @@ namespace MISA.Core.DTOs
         public string fixed_asset_category_code { get; set; }
 
         /// <summary>
+        /// Tỷ lệ hao mòn (%)
+        /// </summary>
+        public decimal depreciation_rate { get; set; }
+
+        /// <summary>
+        /// Giá trị hao mòn hàng năm
+        /// </summary>
+        public decimal depreciation_value { get; set; }
+
+        /// <summary>
+        /// Số năm sử dụng
+        /// </summary>
+        public int life_time { get; set; }
+
+        /// <summary>
         /// Số lượng * (bắt buộc)
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>

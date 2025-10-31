@@ -233,6 +233,7 @@ namespace MISA.Core.Services
             if (entity.cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
 
+            // Ngày mua không được lớn hơn ngày hiện tại
             if (entity.purchase_date > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
@@ -262,6 +263,7 @@ namespace MISA.Core.Services
             if (entity.cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
 
+            // Ngày mua không được lớn hơn ngày hiện tại
             if (entity.purchase_date > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
@@ -297,9 +299,39 @@ namespace MISA.Core.Services
 
             if (dto.cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
-
+            // Ngày mua không được lớn hơn ngày hiện tại
             if (dto.purchase_date > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
+
+            // Tỷ lệ hao mòn phải bằng 1 / Số năm sử dụng
+            if (dto.life_time > 0 && dto.depreciation_rate > 0)
+            {
+                if (dto.depreciation_rate > 1m)
+                {
+                    dto.depreciation_rate /= 100;
+                    Console.WriteLine(dto.depreciation_rate);
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    {
+                        errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
+                    }
+                }
+                else
+                {
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    {
+                        errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
+                    }
+                }
+
+            }
+
+            // Hao mòn năm không được lớn hơn nguyên giá
+            if (dto.depreciation_value > dto.cost)
+            {
+                errors.Add("Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá");
+            }
 
             if (errors.Any())
             {
@@ -331,8 +363,38 @@ namespace MISA.Core.Services
             if (dto.cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
 
+            // Ngày mua không được lớn hơn ngày hiện tại
             if (dto.purchase_date > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
+
+            // Tỷ lệ hao mòn phải bằng 1 / Số năm sử dụng
+            if (dto.life_time > 0 && dto.depreciation_rate > 0)
+            {
+                if (dto.depreciation_rate > 1m)
+                {
+                    dto.depreciation_rate /= 100;
+                    Console.WriteLine(dto.depreciation_rate);
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    {
+                        errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
+                    }
+                }
+                else
+                {
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    {
+                        errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
+                    }
+                }
+            }
+
+            // Hao mòn năm không được lớn hơn nguyên giá
+            if (dto.depreciation_value > dto.cost)
+            {
+                errors.Add("Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá");
+            }
 
             if (errors.Any())
             {
