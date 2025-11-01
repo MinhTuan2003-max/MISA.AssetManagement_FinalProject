@@ -164,24 +164,24 @@ namespace MISA.Infrastructure.Reposiories
                 var parameters = new DynamicParameters();
 
                 // Tìm kiếm theo keyword
-                if (!string.IsNullOrWhiteSpace(filter.keyword))
+                if (!string.IsNullOrWhiteSpace(filter.Keyword))
                 {
                     sql.Append("AND (fa.fixed_asset_code LIKE @Keyword OR fa.fixed_asset_name LIKE @Keyword) ");
-                    parameters.Add("@Keyword", $"%{filter.keyword}%");
+                    parameters.Add("@Keyword", $"%{filter.Keyword}%");
                 }
 
                 // Lọc theo bộ phận
-                if (!string.IsNullOrWhiteSpace(filter.department_code))
+                if (!string.IsNullOrWhiteSpace(filter.DepartmentCode))
                 {
                     sql.Append("AND fa.department_code = @DepartmentCode ");
-                    parameters.Add("@DepartmentCode", filter.department_code);
+                    parameters.Add("@DepartmentCode", filter.DepartmentCode);
                 }
 
                 // Lọc theo loại tài sản
-                if (!string.IsNullOrWhiteSpace(filter.fixed_asset_category_code))
+                if (!string.IsNullOrWhiteSpace(filter.FixedAssetCategoryCode))
                 {
                     sql.Append("AND fa.fixed_asset_category_code = @CategoryCode ");
-                    parameters.Add("@CategoryCode", filter.fixed_asset_category_code);
+                    parameters.Add("@CategoryCode", filter.FixedAssetCategoryCode);
                 }
 
                 // Đếm tổng số bản ghi
@@ -189,9 +189,9 @@ namespace MISA.Infrastructure.Reposiories
                 var totalRecords = connection.ExecuteScalar<int>(countSql, parameters);
 
                 // Phân trang
-                var offset = (filter.page_number - 1) * filter.page_size;
+                var offset = (filter.PageNumber - 1) * filter.PageSize;
                 sql.Append("ORDER BY fa.created_date DESC ");
-                sql.Append($"LIMIT {filter.page_size} OFFSET {offset}");
+                sql.Append($"LIMIT {filter.PageSize} OFFSET {offset}");
 
                 var data = connection.Query<FixedAssetDto>(sql.ToString(), parameters).ToList();
 
@@ -199,9 +199,9 @@ namespace MISA.Infrastructure.Reposiories
                 {
                     Data = data,
                     TotalRecords = totalRecords,
-                    CurrentPage = filter.page_number,
-                    PageSize = filter.page_size,
-                    TotalPages = (int)Math.Ceiling((double)totalRecords / filter.page_size)
+                    CurrentPage = filter.PageNumber,
+                    PageSize = filter.PageSize,
+                    TotalPages = (int)Math.Ceiling((double)totalRecords / filter.PageSize)
                 };
             }
         }
@@ -234,9 +234,9 @@ namespace MISA.Infrastructure.Reposiories
                     using (var transaction = connection.BeginTransaction())
                     {
                         // Generate mã atomic nếu chưa có
-                        if (string.IsNullOrEmpty(entity.fixed_asset_code))
+                        if (string.IsNullOrEmpty(entity.FixedAssetCode))
                         {
-                            entity.fixed_asset_code = GenerateNewCodeAtomic();
+                            entity.FixedAssetCode = GenerateNewCodeAtomic();
                         }
 
                         var sql = new StringBuilder();
@@ -256,29 +256,29 @@ namespace MISA.Infrastructure.Reposiories
                         sql.Append("@Description, @IsActive, @CreatedDate, @CreatedBy, @ModifiedDate, @ModifiedBy)");
 
                         var parameters = new DynamicParameters();
-                        parameters.Add("@FixedAssetId", entity.fixed_asset_id.ToString());
-                        parameters.Add("@FixedAssetCode", entity.fixed_asset_code);
-                        parameters.Add("@FixedAssetName", entity.fixed_asset_name);
-                        parameters.Add("@DepartmentId", entity.department_id.ToString());
-                        parameters.Add("@DepartmentCode", entity.department_code);
-                        parameters.Add("@DepartmentName", entity.department_name);
-                        parameters.Add("@CategoryId", entity.fixed_asset_category_id.ToString());
-                        parameters.Add("@CategoryCode", entity.fixed_asset_category_code);
-                        parameters.Add("@CategoryName", entity.fixed_asset_category_name);
-                        parameters.Add("@PurchaseDate", entity.purchase_date);
-                        parameters.Add("@ProductionYear", entity.production_year);
-                        parameters.Add("@TrackedYear", entity.tracked_year);
-                        parameters.Add("@LifeTime", entity.life_time);
-                        parameters.Add("@DepreciationRate", entity.depreciation_rate);
-                        parameters.Add("@Quantity", entity.quantity);
-                        parameters.Add("@Cost", entity.cost);
-                        parameters.Add("@DepreciationValue", entity.depreciation_value);
-                        parameters.Add("@Description", entity.description);
+                        parameters.Add("@FixedAssetId", entity.FixedAssetId.ToString());
+                        parameters.Add("@FixedAssetCode", entity.FixedAssetCode);
+                        parameters.Add("@FixedAssetName", entity.FixedAssetName);
+                        parameters.Add("@DepartmentId", entity.DepartmentId.ToString());
+                        parameters.Add("@DepartmentCode", entity.DepartmentCode);
+                        parameters.Add("@DepartmentName", entity.DepartmentName);
+                        parameters.Add("@CategoryId", entity.FixedAssetCategoryId.ToString());
+                        parameters.Add("@CategoryCode", entity.FixedAssetCategoryCode);
+                        parameters.Add("@CategoryName", entity.FixedAssetCategoryName);
+                        parameters.Add("@PurchaseDate", entity.PurchaseDate);
+                        parameters.Add("@ProductionYear", entity.ProductionYear);
+                        parameters.Add("@TrackedYear", entity.TrackedYear);
+                        parameters.Add("@LifeTime", entity.LifeTime);
+                        parameters.Add("@DepreciationRate", entity.DepreciationRate);
+                        parameters.Add("@Quantity", entity.Quantity);
+                        parameters.Add("@Cost", entity.Cost);
+                        parameters.Add("@DepreciationValue", entity.DepreciationValue);
+                        parameters.Add("@Description", entity.Description);
                         parameters.Add("@IsActive", true);
-                        parameters.Add("@CreatedDate", entity.created_date);
-                        parameters.Add("@CreatedBy", entity.created_by);
-                        parameters.Add("@ModifiedDate", entity.modified_date);
-                        parameters.Add("@ModifiedBy", entity.modified_by);
+                        parameters.Add("@CreatedDate", entity.CreatedDate);
+                        parameters.Add("@CreatedBy", entity.CreatedBy);
+                        parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                        parameters.Add("@ModifiedBy", entity.ModifiedBy);
 
                         var result = connection.Execute(sql.ToString(), parameters, transaction: transaction);
 
@@ -329,25 +329,26 @@ namespace MISA.Infrastructure.Reposiories
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@FixedAssetId", id.ToString());
-                parameters.Add("@FixedAssetCode", entity.fixed_asset_code);
-                parameters.Add("@FixedAssetName", entity.fixed_asset_name);
-                parameters.Add("@DepartmentId", entity.department_id.ToString());
-                parameters.Add("@DepartmentCode", entity.department_code);
-                parameters.Add("@DepartmentName", entity.department_name);
-                parameters.Add("@CategoryId", entity.fixed_asset_category_id.ToString());
-                parameters.Add("@CategoryCode", entity.fixed_asset_category_code);
-                parameters.Add("@CategoryName", entity.fixed_asset_category_name);
-                parameters.Add("@PurchaseDate", entity.purchase_date);
-                parameters.Add("@ProductionYear", entity.production_year);
-                parameters.Add("@TrackedYear", entity.tracked_year);
-                parameters.Add("@LifeTime", entity.life_time);
-                parameters.Add("@DepreciationRate", entity.depreciation_rate);
-                parameters.Add("@Quantity", entity.quantity);
-                parameters.Add("@Cost", entity.cost);
-                parameters.Add("@DepreciationValue", entity.depreciation_value);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                parameters.Add("@FixedAssetCode", entity.FixedAssetCode);
+                parameters.Add("@FixedAssetName", entity.FixedAssetName);
+                parameters.Add("@DepartmentId", entity.DepartmentId.ToString());
+                parameters.Add("@DepartmentCode", entity.DepartmentCode);
+                parameters.Add("@DepartmentName", entity.DepartmentName);
+                parameters.Add("@CategoryId", entity.FixedAssetCategoryId.ToString());
+                parameters.Add("@CategoryCode", entity.FixedAssetCategoryCode);
+                parameters.Add("@CategoryName", entity.FixedAssetCategoryName);
+                parameters.Add("@PurchaseDate", entity.PurchaseDate);
+                parameters.Add("@ProductionYear", entity.ProductionYear);
+                parameters.Add("@TrackedYear", entity.TrackedYear);
+                parameters.Add("@LifeTime", entity.LifeTime);
+                parameters.Add("@DepreciationRate", entity.DepreciationRate);
+                parameters.Add("@Quantity", entity.Quantity);
+                parameters.Add("@Cost", entity.Cost);
+                parameters.Add("@DepreciationValue", entity.DepreciationValue);
+                parameters.Add("@Description", entity.Description);
+                parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                parameters.Add("@ModifiedBy", entity.ModifiedBy);
+
 
                 return connection.Execute(sql.ToString(), parameters);
             }

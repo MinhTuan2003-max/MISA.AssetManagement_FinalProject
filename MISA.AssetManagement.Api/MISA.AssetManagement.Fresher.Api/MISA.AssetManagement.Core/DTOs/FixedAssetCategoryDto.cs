@@ -1,4 +1,6 @@
-﻿namespace MISA.Core.DTOs
+﻿using System;
+
+namespace MISA.Core.DTOs
 {
     /// <summary>
     /// DTO hiển thị thông tin loại tài sản
@@ -9,31 +11,31 @@
         /// <summary>
         /// ID của loại tài sản cố định
         /// </summary>
-        public Guid fixed_asset_category_id { get; set; }
+        public Guid FixedAssetCategoryId { get; set; }
 
         /// <summary>
         /// Mã loại tài sản cố định
         /// </summary>
-        public string fixed_asset_category_code { get; set; }
+        public string FixedAssetCategoryCode { get; set; }
 
         /// <summary>
         /// Tên loại tài sản cố định
         /// </summary>
-        public string fixed_asset_category_name { get; set; }
+        public string FixedAssetCategoryName { get; set; }
 
         /// <summary>
         /// Tên viết tắt cho tài sản cố định
         /// </summary>
-        public string? fixed_asset_category_short_name { get; set; }
+        public string? FixedAssetCategoryShortName { get; set; }
 
         /// <summary>
         /// Thời gian sử dụng (năm)
         /// </summary>
-        public int life_time { get; set; }
+        public int LifeTime { get; set; }
 
         /// <summary>
         /// Tỷ lệ hao mòn (%)
         /// </summary>
-        public decimal depreciation_rate { get; set; }
+        public decimal DepreciationRate { get; set; }
     }
 }

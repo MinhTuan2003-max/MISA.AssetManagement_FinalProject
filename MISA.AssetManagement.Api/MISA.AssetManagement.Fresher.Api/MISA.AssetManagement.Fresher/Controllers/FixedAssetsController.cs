@@ -42,11 +42,11 @@ namespace MISA.AssetManagement.Fresher.Controllers
         {
             var filter = new FixedAssetFilterDto
             {
-                keyword = keyword,
-                department_code = department_code,
-                fixed_asset_category_code = fixed_asset_category_code,
-                page_number = page_number,
-                page_size = page_size
+                Keyword = keyword,
+                DepartmentCode = department_code,
+                FixedAssetCategoryCode = fixed_asset_category_code,
+                PageNumber = page_number,
+                PageSize = page_size
             };
 
             var result = _fixedAssetService.GetPaging(filter);

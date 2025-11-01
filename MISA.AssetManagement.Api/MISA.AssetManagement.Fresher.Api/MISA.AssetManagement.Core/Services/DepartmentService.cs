@@ -24,10 +24,10 @@ namespace MISA.Core.Services
         /// </summary>
         protected override void ValidateBeforeCreate(Department entity)
         {
-            if (string.IsNullOrEmpty(entity.department_code))
+            if (string.IsNullOrEmpty(entity.DepartmentCode))
                 throw new MISA.Core.Exceptions.ValidateException("Mã bộ phận không được để trống");
 
-            if (string.IsNullOrEmpty(entity.department_name))
+            if (string.IsNullOrEmpty(entity.DepartmentName))
                 throw new MISA.Core.Exceptions.ValidateException("Tên bộ phận không được để trống");
         }
     }

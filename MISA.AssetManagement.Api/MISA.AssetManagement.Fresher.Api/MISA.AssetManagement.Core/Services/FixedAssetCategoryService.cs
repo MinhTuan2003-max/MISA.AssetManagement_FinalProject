@@ -24,10 +24,10 @@ namespace MISA.Core.Services
         /// </summary>
         protected override void ValidateBeforeCreate(FixedAssetCategory entity)
         {
-            if (string.IsNullOrEmpty(entity.fixed_asset_category_code))
+            if (string.IsNullOrEmpty(entity.FixedAssetCategoryCode))
                 throw new MISA.Core.Exceptions.ValidateException("Mã loại tài sản không được để trống");
 
-            if (string.IsNullOrEmpty(entity.fixed_asset_category_name))
+            if (string.IsNullOrEmpty(entity.FixedAssetCategoryName))
                 throw new MISA.Core.Exceptions.ValidateException("Tên loại tài sản không được để trống");
         }
     }

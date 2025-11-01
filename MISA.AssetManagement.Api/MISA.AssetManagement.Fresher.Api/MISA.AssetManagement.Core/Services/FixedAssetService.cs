@@ -58,49 +58,60 @@ namespace MISA.Core.Services
             ValidateCreateDto(dto);
 
             // Lấy thông tin bộ phận
-            var department = _departmentRepository.GetByCode(dto.department_code);
+            var department = _departmentRepository.GetByCode(dto.DepartmentCode);
             if (department == null)
             {
-                throw new NotFoundException($"Không tìm thấy bộ phận với mã: {dto.department_code}");
+                throw new NotFoundException($"Không tìm thấy bộ phận với mã: {dto.DepartmentCode}");
             }
 
             // Lấy thông tin loại tài sản
-            var category = _categoryRepository.GetByCode(dto.fixed_asset_category_code);
+            var category = _categoryRepository.GetByCode(dto.FixedAssetCategoryCode);
             if (category == null)
             {
-                throw new NotFoundException($"Không tìm thấy loại tài sản với mã: {dto.fixed_asset_category_code}");
+                throw new NotFoundException($"Không tìm thấy loại tài sản với mã: {dto.FixedAssetCategoryCode}");
             }
 
             // Map DTO sang Entity
             var entity = new FixedAsset
             {
-                fixed_asset_id = Guid.NewGuid(),
-                fixed_asset_code = dto.fixed_asset_code,
-                fixed_asset_name = dto.fixed_asset_name,
+                // Khóa chính - tự sinh GUID mới cho tài sản
+                FixedAssetId = Guid.NewGuid(),
 
-                department_id = department.department_id,
-                department_code = department.department_code,
-                department_name = department.department_name,
+                // Thông tin cơ bản từ form người dùng nhập
+                FixedAssetCode = dto.FixedAssetCode,
+                FixedAssetName = dto.FixedAssetName,
 
-                fixed_asset_category_id = category.fixed_asset_category_id,
-                fixed_asset_category_code = category.fixed_asset_category_code,
-                fixed_asset_category_name = category.fixed_asset_category_name,
+                // Thông tin bộ phận sử dụng (lấy từ bảng Department)
+                DepartmentId = department.DepartmentId,
+                DepartmentCode = department.DepartmentCode,
+                DepartmentName = department.DepartmentName,
 
-                purchase_date = dto.purchase_date,
-                production_year = dto.purchase_date.Year,
-                tracked_year = dto.purchase_date.Year,
+                // Thông tin loại tài sản (lấy từ bảng FixedAssetCategory)
+                FixedAssetCategoryId = category.FixedAssetCategoryId,
+                FixedAssetCategoryCode = category.FixedAssetCategoryCode,
+                FixedAssetCategoryName = category.FixedAssetCategoryName,
 
-                life_time = category.life_time,
-                depreciation_rate = category.depreciation_rate,
+                // Ngày mua và năm theo dõi (dựa theo ngày mua)
+                PurchaseDate = dto.PurchaseDate,
+                ProductionYear = dto.PurchaseDate.Year, // Năm sản xuất = năm mua
+                TrackedYear = dto.PurchaseDate.Year,    // Năm theo dõi = năm mua
 
-                quantity = dto.quantity,
-                cost = dto.cost,
-                depreciation_value = dto.cost * category.depreciation_rate / 100,
+                // Thông tin khấu hao (theo loại tài sản)
+                LifeTime = category.LifeTime,
+                DepreciationRate = category.DepreciationRate,
 
-                description = dto.description,
-                is_active = true,
-                created_date = DateTime.Now,
-                modified_date = DateTime.Now
+                // Giá trị tài sản và tính toán khấu hao ban đầu
+                Quantity = dto.Quantity,
+                Cost = dto.Cost,
+                DepreciationValue = dto.Cost * category.DepreciationRate / 100, // Giá trị hao mòn năm đầu
+
+                // Mô tả thêm (nếu có)
+                Description = dto.Description,
+
+                // Trạng thái & audit info
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
             };
 
             return Create(entity);
@@ -122,37 +133,37 @@ namespace MISA.Core.Services
             ValidateUpdateDto(dto);
 
             // Lấy thông tin bộ phận mới (nếu có thay đổi)
-            var department = _departmentRepository.GetByCode(dto.department_code);
+            var department = _departmentRepository.GetByCode(dto.DepartmentCode);
             if (department == null)
             {
-                throw new NotFoundException($"Không tìm thấy bộ phận với mã: {dto.department_code}");
+                throw new NotFoundException($"Không tìm thấy bộ phận với mã: {dto.DepartmentCode}");
             }
 
             // Lấy thông tin loại tài sản mới (nếu có thay đổi)
-            var category = _categoryRepository.GetByCode(dto.fixed_asset_category_code);
+            var category = _categoryRepository.GetByCode(dto.FixedAssetCategoryCode);
             if (category == null)
             {
-                throw new NotFoundException($"Không tìm thấy loại tài sản với mã: {dto.fixed_asset_category_code}");
+                throw new NotFoundException($"Không tìm thấy loại tài sản với mã: {dto.FixedAssetCategoryCode}");
             }
 
             // Update entity
-            existing.fixed_asset_name = dto.fixed_asset_name;
-            existing.department_id = department.department_id;
-            existing.department_code = department.department_code;
-            existing.department_name = department.department_name;
-            existing.fixed_asset_category_id = category.fixed_asset_category_id;
-            existing.fixed_asset_category_code = category.fixed_asset_category_code;
-            existing.fixed_asset_category_name = category.fixed_asset_category_name;
-            existing.quantity = dto.quantity;
-            existing.cost = dto.cost;
-            existing.purchase_date = dto.purchase_date;
-            existing.production_year = dto.purchase_date.Year;
-            existing.tracked_year = dto.purchase_date.Year;
-            existing.life_time = category.life_time;
-            existing.depreciation_rate = category.depreciation_rate;
-            existing.depreciation_value = dto.cost * category.depreciation_rate / 100;
-            existing.description = dto.description;
-            existing.modified_date = DateTime.Now;
+            existing.FixedAssetName = dto.FixedAssetName;
+            existing.DepartmentId = department.DepartmentId;
+            existing.DepartmentCode = department.DepartmentCode;
+            existing.DepartmentName = department.DepartmentName;
+            existing.FixedAssetCategoryId = category.FixedAssetCategoryId;
+            existing.FixedAssetCategoryCode = category.FixedAssetCategoryCode;
+            existing.FixedAssetCategoryName = category.FixedAssetCategoryName;
+            existing.Quantity = dto.Quantity;
+            existing.Cost = dto.Cost;
+            existing.PurchaseDate = dto.PurchaseDate;
+            existing.ProductionYear = dto.PurchaseDate.Year;
+            existing.TrackedYear = dto.PurchaseDate.Year;
+            existing.LifeTime = category.LifeTime;
+            existing.DepreciationRate = category.DepreciationRate;
+            existing.DepreciationValue = dto.Cost * category.DepreciationRate / 100;
+            existing.Description = dto.Description;
+            existing.ModifiedDate = DateTime.Now;
 
             return Update(id, existing);
         }
@@ -173,33 +184,33 @@ namespace MISA.Core.Services
             // Copy entity với mã mới
             var duplicated = new FixedAsset
             {
-                fixed_asset_id = Guid.NewGuid(),
-                fixed_asset_code = newCode,
-                fixed_asset_name = original.fixed_asset_name + " (Copy)",
+                FixedAssetId = Guid.NewGuid(),
+                FixedAssetCode = newCode,
+                FixedAssetName = original.FixedAssetName + " (Copy)",
 
-                department_id = original.department_id,
-                department_code = original.department_code,
-                department_name = original.department_name,
+                DepartmentId = original.DepartmentId,
+                DepartmentCode = original.DepartmentCode,
+                DepartmentName = original.DepartmentName,
 
-                fixed_asset_category_id = original.fixed_asset_category_id,
-                fixed_asset_category_code = original.fixed_asset_category_code,
-                fixed_asset_category_name = original.fixed_asset_category_name,
+                FixedAssetCategoryId = original.FixedAssetCategoryId,
+                FixedAssetCategoryCode = original.FixedAssetCategoryCode,
+                FixedAssetCategoryName = original.FixedAssetCategoryName,
 
-                purchase_date = DateTime.Now,
-                production_year = DateTime.Now.Year,
-                tracked_year = DateTime.Now.Year,
+                PurchaseDate = DateTime.Now,
+                ProductionYear = DateTime.Now.Year,
+                TrackedYear = DateTime.Now.Year,
 
-                life_time = original.life_time,
-                depreciation_rate = original.depreciation_rate,
+                LifeTime = original.LifeTime,
+                DepreciationRate = original.DepreciationRate,
 
-                quantity = original.quantity,
-                cost = original.cost,
-                depreciation_value = original.depreciation_value,
+                Quantity = original.Quantity,
+                Cost = original.Cost,
+                DepreciationValue = original.DepreciationValue,
 
-                description = original.description,
-                is_active = true,
-                created_date = DateTime.Now,
-                modified_date = DateTime.Now
+                Description = original.Description,
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
             };
 
             return Create(duplicated);
@@ -215,26 +226,26 @@ namespace MISA.Core.Services
             var errors = new List<string>();
 
             // Kiểm tra mã tài sản không trùng
-            if (_fixedAssetRepository.CheckCodeExists(entity.fixed_asset_code))
+            if (_fixedAssetRepository.CheckCodeExists(entity.FixedAssetCode))
             {
-                throw new ConflictException($"Mã tài sản '{entity.fixed_asset_code}' đã tồn tại trong hệ thống");
+                throw new ConflictException($"Mã tài sản '{entity.FixedAssetCode}' đã tồn tại trong hệ thống");
             }
 
             // Validate các trường bắt buộc
-            if (string.IsNullOrWhiteSpace(entity.fixed_asset_code))
+            if (string.IsNullOrWhiteSpace(entity.FixedAssetCode))
                 errors.Add("Mã tài sản không được để trống");
 
-            if (string.IsNullOrWhiteSpace(entity.fixed_asset_name))
+            if (string.IsNullOrWhiteSpace(entity.FixedAssetName))
                 errors.Add("Tên tài sản không được để trống");
 
-            if (entity.quantity <= 0)
+            if (entity.Quantity <= 0)
                 errors.Add("Số lượng phải lớn hơn 0");
 
-            if (entity.cost <= 0)
+            if (entity.Cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
 
             // Ngày mua không được lớn hơn ngày hiện tại
-            if (entity.purchase_date > DateTime.Now)
+            if (entity.PurchaseDate > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
             if (errors.Any())
@@ -254,17 +265,17 @@ namespace MISA.Core.Services
             var errors = new List<string>();
 
             // Validate các trường bắt buộc
-            if (string.IsNullOrWhiteSpace(entity.fixed_asset_name))
+            if (string.IsNullOrWhiteSpace(entity.FixedAssetName))
                 errors.Add("Tên tài sản không được để trống");
 
-            if (entity.quantity <= 0)
+            if (entity.Quantity <= 0)
                 errors.Add("Số lượng phải lớn hơn 0");
 
-            if (entity.cost <= 0)
+            if (entity.Cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
 
             // Ngày mua không được lớn hơn ngày hiện tại
-            if (entity.purchase_date > DateTime.Now)
+            if (entity.PurchaseDate > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
             if (errors.Any())
@@ -282,43 +293,43 @@ namespace MISA.Core.Services
         {
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(dto.fixed_asset_code))
+            if (string.IsNullOrWhiteSpace(dto.FixedAssetCode))
                 errors.Add("Mã tài sản không được để trống");
 
-            if (string.IsNullOrWhiteSpace(dto.fixed_asset_name))
+            if (string.IsNullOrWhiteSpace(dto.FixedAssetName))
                 errors.Add("Tên tài sản không được để trống");
 
-            if (string.IsNullOrWhiteSpace(dto.department_code))
+            if (string.IsNullOrWhiteSpace(dto.DepartmentCode))
                 errors.Add("Mã bộ phận sử dụng không được để trống");
 
-            if (string.IsNullOrWhiteSpace(dto.fixed_asset_category_code))
+            if (string.IsNullOrWhiteSpace(dto.FixedAssetCategoryCode))
                 errors.Add("Mã loại tài sản không được để trống");
 
-            if (dto.quantity <= 0)
+            if (dto.Quantity <= 0)
                 errors.Add("Số lượng phải lớn hơn 0");
 
-            if (dto.cost <= 0)
+            if (dto.Cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
             // Ngày mua không được lớn hơn ngày hiện tại
-            if (dto.purchase_date > DateTime.Now)
+            if (dto.PurchaseDate > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
             // Tỷ lệ hao mòn phải bằng 1 / Số năm sử dụng
-            if (dto.life_time > 0 && dto.depreciation_rate > 0)
+            if (dto.LifeTime > 0 && dto.DepreciationRate > 0)
             {
-                if (dto.depreciation_rate > 1m)
+                if (dto.DepreciationRate > 1m)
                 {
-                    dto.depreciation_rate /= 100;
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 5);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
+                    dto.DepreciationRate /= 100;
+                    decimal expectedRate = Math.Round(1m / dto.LifeTime, 5);
+                    if (Math.Abs(dto.DepreciationRate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
                 }
                 else
                 {
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 5);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
+                    decimal expectedRate = Math.Round(1m / dto.LifeTime, 5);
+                    if (Math.Abs(dto.DepreciationRate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
@@ -327,7 +338,7 @@ namespace MISA.Core.Services
             }
 
             // Hao mòn năm không được lớn hơn nguyên giá
-            if (dto.depreciation_value > dto.cost)
+            if (dto.DepreciationValue > dto.Cost)
             {
                 errors.Add("Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá");
             }
@@ -347,52 +358,56 @@ namespace MISA.Core.Services
         {
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(dto.fixed_asset_name))
+            if (string.IsNullOrWhiteSpace(dto.FixedAssetName))
                 errors.Add("Tên tài sản không được để trống");
 
-            if (string.IsNullOrWhiteSpace(dto.department_code))
+            if (string.IsNullOrWhiteSpace(dto.DepartmentCode))
                 errors.Add("Mã bộ phận sử dụng không được để trống");
 
-            if (string.IsNullOrWhiteSpace(dto.fixed_asset_category_code))
+            if (string.IsNullOrWhiteSpace(dto.FixedAssetCategoryCode))
                 errors.Add("Mã loại tài sản không được để trống");
 
-            if (dto.quantity <= 0)
+            if (dto.Quantity <= 0)
                 errors.Add("Số lượng phải lớn hơn 0");
 
-            if (dto.cost <= 0)
+            if (dto.Cost <= 0)
                 errors.Add("Nguyên giá phải lớn hơn 0");
-
             // Ngày mua không được lớn hơn ngày hiện tại
-            if (dto.purchase_date > DateTime.Now)
+            if (dto.PurchaseDate > DateTime.Now)
                 errors.Add("Ngày mua không được lớn hơn ngày hiện tại");
 
             // Tỷ lệ hao mòn phải bằng 1 / Số năm sử dụng
-            if (dto.life_time > 0 && dto.depreciation_rate > 0)
+            if (dto.LifeTime > 0 && dto.DepreciationRate > 0)
             {
-                if (dto.depreciation_rate > 1m)
+                if (dto.DepreciationRate > 1m)
                 {
-                    dto.depreciation_rate /= 100;
-                    Console.WriteLine(dto.depreciation_rate);
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
+                    dto.DepreciationRate /= 100;
+                    decimal expectedRate = Math.Round(1m / dto.LifeTime, 5);
+                    if (Math.Abs(dto.DepreciationRate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
                 }
                 else
                 {
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
+                    decimal expectedRate = Math.Round(1m / dto.LifeTime, 5);
+                    if (Math.Abs(dto.DepreciationRate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
                 }
+
             }
 
             // Hao mòn năm không được lớn hơn nguyên giá
-            if (dto.depreciation_value > dto.cost)
+            if (dto.DepreciationValue > dto.Cost)
             {
                 errors.Add("Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá");
+            }
+
+            if (errors.Any())
+            {
+                throw new ValidateException(string.Join("; ", errors));
             }
 
             if (errors.Any())
