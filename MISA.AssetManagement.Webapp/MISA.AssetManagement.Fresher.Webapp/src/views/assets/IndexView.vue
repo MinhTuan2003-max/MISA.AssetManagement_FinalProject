@@ -144,6 +144,26 @@
       @close="showSaveChangesDialog = false"
     />
 
+    <!-- Dialog 4: Duplicate tài sản -->
+    <BaseDialog
+      v-if="showDuplicateDialog"
+      :description="dialogMessage"
+      icon-class="warning-icon"
+      :buttons="[
+        {
+          label: 'Hủy',
+          type: 'cancel',
+          action: () => (showDuplicateDialog = false)
+        },
+        {
+          label: 'Nhân bản',
+          type: 'primary',
+          action: confirmDuplicate
+        }
+      ]"
+      @close="showDuplicateDialog = false"
+    />
+
     <!-- Toast Notifications Container -->
     <div class="toast-container">
       <transition-group name="toast-list" tag="div">
@@ -234,6 +254,9 @@ const showCancelDeclarationDialog = ref(false)
 // Save Changes Dialog State
 const showSaveChangesDialog = ref(false)
 const pendingSubmitData = ref(null)
+const showDuplicateDialog = ref(false)
+const dialogMessage = ref('')
+let assetToDuplicate = null
 
 // Filter/Search Animation State
 const isFiltering = ref(false)
@@ -537,10 +560,10 @@ async function confirmDelete() {
       await deleteFixedAsset(assetId)
       const code = asset.AssetCode || asset.fixed_asset_code || 'N/A'
       const name = asset.AssetName || asset.fixed_asset_name || 'N/A'
-      toastDelete(`Tài sản <strong>${code} - ${name}</strong> đã bị xóa.`)
+      toastDelete(`Tài sản ${code} - ${name} đã bị xóa.`)
     } else {
       await deleteSelectedAssets()
-      toastDelete(`<strong>${selectedIds.value.length}</strong> tài sản đã bị xóa.`)
+      toastDelete(`Các tài sản đã bị xóa.`)
     }
 
     showDeleteDialog.value = false
@@ -561,7 +584,10 @@ function handleRowClick(item) {
   console.log('Row clicked:', item)
 }
 
-async function handleDuplicate(item) {
+/**
+ * Hàm được gọi khi người dùng chọn "Nhân bản" từ context menu
+ */
+function handleDuplicate(item) {
   if (!item) {
     toastError('Không thể xác định tài sản cần nhân bản')
     return
@@ -573,15 +599,22 @@ async function handleDuplicate(item) {
     return
   }
 
-  const confirmed = confirm(
-    `Bạn có muốn nhân bản tài sản "${item.AssetName || item.fixed_asset_name}" không?`
-  )
-  if (!confirmed) return
+  assetToDuplicate = item
+  dialogMessage.value = `Bạn có muốn nhân bản tài sản <strong>${item.AssetName || item.fixed_asset_name}</strong> không?`
+  showDuplicateDialog.value = true
+}
+
+/**
+ * Hàm thực hiện khi người dùng xác nhận trong dialog
+ */
+async function confirmDuplicate() {
+  showDuplicateDialog.value = false
+  const assetId = assetToDuplicate.CandidateID || assetToDuplicate.fixed_asset_id || assetToDuplicate.id
+  await duplicateFixedAsset(assetId)
 
   try {
-    const duplicatedAsset = await duplicateFixedAsset(assetId)
-    toastSuccess(`Nhân bản tài sản thành công! Mã mới: ${duplicatedAsset.fixed_asset_code}`)
-    await loadFixedAssets()
+    toastSuccess('Nhân bản tài sản thành công!')
+    await loadFixedAssets() // reload danh sách
   } catch (err) {
     toastError(`Lỗi khi nhân bản tài sản: ${err.message}`)
   }
@@ -593,7 +626,7 @@ async function handleExportExcel() {
       toastError('Không có dữ liệu để xuất')
       return
     }
-    await exportFixedAssets(filteredAssets.value)
+    exportFixedAssets(filteredAssets.value)
     toastSuccess('Xuất Excel thành công!')
   } catch (err) {
     console.error('Export error:', err)
