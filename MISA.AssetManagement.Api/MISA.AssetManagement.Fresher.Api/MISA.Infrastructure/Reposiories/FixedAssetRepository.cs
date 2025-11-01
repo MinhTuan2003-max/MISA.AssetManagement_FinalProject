@@ -353,25 +353,5 @@ namespace MISA.Infrastructure.Reposiories
                 return connection.Execute(sql.ToString(), parameters);
             }
         }
-
-        /// <summary>
-        /// Tính giá trị còn lại của tài sản (sử dụng stored procedure)
-        /// CreatedBy: HMTuan (28/10/2025)
-        /// </summary>
-        /// <param name="fixedAssetId">ID tài sản</param>
-        /// <returns>Giá trị còn lại</returns>
-        public decimal CalculateRemainingValue(Guid fixedAssetId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@p_fixed_asset_id", fixedAssetId.ToString());
-                parameters.Add("@p_remaining_value", dbType: System.Data.DbType.Decimal, direction: System.Data.ParameterDirection.Output);
-
-                connection.Execute("sp_calculate_remaining_value", parameters, commandType: System.Data.CommandType.StoredProcedure);
-
-                return parameters.Get<decimal>("@p_remaining_value");
-            }
-        }
     }
 }

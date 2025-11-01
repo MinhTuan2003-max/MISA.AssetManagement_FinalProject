@@ -53,15 +53,15 @@ namespace MISA.Infrastructure.Reposiories
                 sql.Append("@Description, @IsActive, @CreatedDate, @CreatedBy, @ModifiedDate, @ModifiedBy)");
 
                 var parameters = new DynamicParameters();
-                parameters.Add("@DepartmentId", entity.department_id.ToString());
-                parameters.Add("@DepartmentCode", entity.department_code);
-                parameters.Add("@DepartmentName", entity.department_name);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@IsActive", entity.is_active);
-                parameters.Add("@CreatedDate", entity.created_date);
-                parameters.Add("@CreatedBy", entity.created_by);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                parameters.Add("@DepartmentId", entity.DepartmentId.ToString());
+                parameters.Add("@DepartmentCode", entity.DepartmentCode);
+                parameters.Add("@DepartmentName", entity.DepartmentName);
+                parameters.Add("@Description", entity.Description);
+                parameters.Add("@IsActive", entity.IsActive);
+                parameters.Add("@CreatedDate", entity.CreatedDate);
+                parameters.Add("@CreatedBy", entity.CreatedBy);
+                parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                parameters.Add("@ModifiedBy", entity.ModifiedBy);
 
                 return connection.Execute(sql.ToString(), parameters);
             }
@@ -88,10 +88,10 @@ namespace MISA.Infrastructure.Reposiories
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@DepartmentId", id.ToString());
-                parameters.Add("@DepartmentName", entity.department_name);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                parameters.Add("@DepartmentName", entity.DepartmentName);
+                parameters.Add("@Description", entity.Description);
+                parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                parameters.Add("@ModifiedBy", entity.ModifiedBy);
 
                 return connection.Execute(sql.ToString(), parameters);
             }

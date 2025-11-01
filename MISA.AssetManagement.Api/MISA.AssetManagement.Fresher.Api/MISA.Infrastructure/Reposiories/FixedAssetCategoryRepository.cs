@@ -54,17 +54,17 @@ namespace MISA.Infrastructure.Reposiories
                 sql.Append("@Description, @IsActive, @CreatedDate, @CreatedBy, @ModifiedDate, @ModifiedBy)");
 
                 var parameters = new DynamicParameters();
-                parameters.Add("@CategoryId", entity.fixed_asset_category_id.ToString());
-                parameters.Add("@CategoryCode", entity.fixed_asset_category_code);
-                parameters.Add("@CategoryName", entity.fixed_asset_category_name);
-                parameters.Add("@LifeTime", entity.life_time);
-                parameters.Add("@DepreciationRate", entity.depreciation_rate);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@IsActive", entity.is_active);
-                parameters.Add("@CreatedDate", entity.created_date);
-                parameters.Add("@CreatedBy", entity.created_by);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                parameters.Add("@CategoryId", entity.FixedAssetCategoryId.ToString());
+                parameters.Add("@CategoryCode", entity.FixedAssetCategoryCode);
+                parameters.Add("@CategoryName", entity.FixedAssetCategoryName);
+                parameters.Add("@LifeTime", entity.LifeTime);
+                parameters.Add("@DepreciationRate", entity.DepreciationRate);
+                parameters.Add("@Description", entity.Description);
+                parameters.Add("@IsActive", entity.IsActive);
+                parameters.Add("@CreatedDate", entity.CreatedDate);
+                parameters.Add("@CreatedBy", entity.CreatedBy);
+                parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                parameters.Add("@ModifiedBy", entity.ModifiedBy);
 
                 return connection.Execute(sql.ToString(), parameters);
             }
@@ -93,12 +93,12 @@ namespace MISA.Infrastructure.Reposiories
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@CategoryId", id.ToString());
-                parameters.Add("@CategoryName", entity.fixed_asset_category_name);
-                parameters.Add("@LifeTime", entity.life_time);
-                parameters.Add("@DepreciationRate", entity.depreciation_rate);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                parameters.Add("@CategoryName", entity.FixedAssetCategoryName);
+                parameters.Add("@LifeTime", entity.LifeTime);
+                parameters.Add("@DepreciationRate", entity.DepreciationRate);
+                parameters.Add("@Description", entity.Description);
+                parameters.Add("@ModifiedDate", entity.ModifiedDate);
+                parameters.Add("@ModifiedBy", entity.ModifiedBy);
 
                 return connection.Execute(sql.ToString(), parameters);
             }

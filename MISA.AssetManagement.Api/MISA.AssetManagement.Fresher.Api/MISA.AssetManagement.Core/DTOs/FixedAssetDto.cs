@@ -60,17 +60,6 @@ namespace MISA.Core.DTOs
         public decimal DepreciationValue { get; set; }
 
         /// <summary>
-        /// HM/KH lũy kế = depreciationValue
-        /// </summary>
-        public decimal AccumulatedDepreciation { get; set; }
-
-        /// <summary>
-        /// Giá trị còn lại
-        /// Công thức: remainingValue = cost - depreciationValue
-        /// </summary>
-        public decimal RemainingValue { get; set; }
-
-        /// <summary>
         /// Ngày mua
         /// </summary>
         public DateTime PurchaseDate { get; set; }

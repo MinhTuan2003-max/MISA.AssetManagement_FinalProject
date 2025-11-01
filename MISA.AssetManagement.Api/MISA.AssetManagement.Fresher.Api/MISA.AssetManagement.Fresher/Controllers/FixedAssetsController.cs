@@ -2,7 +2,6 @@
 using MISA.Core.DTOs;
 using MISA.Core.Entities;
 using MISA.Core.Interfaces.Service;
-using MISA.Infrastructure.Reposiories;
 
 namespace MISA.AssetManagement.Fresher.Controllers
 {
