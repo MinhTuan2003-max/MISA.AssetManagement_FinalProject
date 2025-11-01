@@ -94,6 +94,16 @@
               </template>
             </td>
           </tr>
+
+          <!-- Filler rows để đẩy footer xuống dưới khi data ít -->
+          <tr
+            v-for="n in fillerRowsCount"
+            :key="`filler-${n}`"
+            class="filler-row"
+          >
+            <td v-if="showCheckbox" class="checkbox-col"></td>
+            <td v-for="column in columns" :key="column.key" :class="column.class"></td>
+          </tr>
         </tbody>
 
         <tfoot v-if="pagination" class="sticky-footer">
@@ -783,6 +793,22 @@ th {
 
 tbody {
   display: table-row-group;
+}
+
+/* Đảm bảo tbody có chiều cao tối thiểu để đẩy tfoot xuống dưới */
+.data-table {
+  min-height: 100%;
+  height: 100%;
+}
+
+.table-container {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  outline: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 td {

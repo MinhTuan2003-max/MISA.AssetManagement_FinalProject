@@ -319,10 +319,26 @@ watch(searchQuery, async () => {
 })
 
 watch([filterCategory, filterDepartment], async () => {
-  if (filterTimeout) clearTimeout(filterTimeout)
+  console.log('Filter changed:', {
+    category: filterCategory.value,
+    department: filterDepartment.value
+  })
+
+  // Hiển thị animation
   showTable.value = false
   isFiltering.value = true
-  await new Promise(resolve => setTimeout(resolve, 200))
+
+  // Đợi composable load xong
+  // (composable đã có watch riêng để gọi loadFixedAssets)
+  await new Promise(resolve => {
+    const checkLoading = setInterval(() => {
+      if (!loading.value) {
+        clearInterval(checkLoading)
+        resolve()
+      }
+    }, 50)
+  })
+
   tableKey.value++
   await nextTick()
   isFiltering.value = false

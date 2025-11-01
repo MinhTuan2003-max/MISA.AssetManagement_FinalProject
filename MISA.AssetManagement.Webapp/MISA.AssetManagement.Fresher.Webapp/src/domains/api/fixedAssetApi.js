@@ -25,20 +25,20 @@ class FixedAssetApi extends BaseApi {
    */
   async getFixedAssets(filterDto = {}) {
     const params = {
-      PageNumber: filterDto.PageNumber || 1,
-      PageSize: filterDto.PageSize || 20
+      page_number: filterDto.PageNumber || 1,
+      page_size: filterDto.PageSize || 20
     };
 
     if (filterDto.Keyword && filterDto.Keyword.trim()) {
-      params.Keyword = filterDto.Keyword.trim();
+      params.keyword = filterDto.Keyword.trim();
     }
 
     if (filterDto.DepartmentCode) {
-      params.DepartmentCode = filterDto.DepartmentCode;
+      params.department_code = filterDto.DepartmentCode;
     }
 
     if (filterDto.FixedAssetCategoryCode) {
-      params.FixedAssetCategoryCode = filterDto.FixedAssetCategoryCode;
+      params.fixed_asset_category_code = filterDto.FixedAssetCategoryCode;
     }
 
     const response = await this.getFiltered(params);
