@@ -1,10 +1,11 @@
-import { BaseApi } from './baseApi';
-import { FixedAsset } from '@/domains/models/FixedAsset.js';
+import { BaseApi } from './baseApi'
+import { FixedAsset } from '@/domains/models/FixedAsset.js'
 
 /**
  * API Service cho Tài sản cố định (FixedAsset)
  * Cung cấp các phương thức CRUD và filter cho tài sản
  * CreatedBy: HMTuan (29/10/2025)
+ * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase + Error Handling
  */
 class FixedAssetApi extends BaseApi {
   constructor() {
@@ -14,46 +15,45 @@ class FixedAssetApi extends BaseApi {
   /**
    * Lấy danh sách tài sản với filter và phân trang
    * @param {Object} filterDto - DTO chứa bộ lọc và thông tin phân trang
-   * @param {string} filterDto.keyword - từ khóa tìm kiếm
-   * @param {string} filterDto.department_code - mã phòng ban
-   * @param {string} filterDto.fixed_asset_category_code - mã loại tài sản
-   * @param {number} filterDto.page_number - số trang
-   * @param {number} filterDto.page_size - số bản ghi/trang
+   * @param {string} filterDto.Keyword - từ khóa tìm kiếm
+   * @param {string} filterDto.DepartmentCode - mã phòng ban
+   * @param {string} filterDto.FixedAssetCategoryCode - mã loại tài sản
+   * @param {number} filterDto.PageNumber - số trang
+   * @param {number} filterDto.PageSize - số bản ghi/trang
    * @returns {Promise<Object>} dữ liệu trả về gồm: assets (mảng FixedAsset), totalRecords, totalPages, currentPage, pageSize
    * CreatedBy: HMTuan (29/10/2025)
    */
   async getFixedAssets(filterDto = {}) {
-    try {
-      const params = {
-        page_number: filterDto.page_number || 1,
-        page_size: filterDto.page_size || 20
-      };
+    const params = {
+      PageNumber: filterDto.PageNumber || 1,
+      PageSize: filterDto.PageSize || 20
+    };
 
-      if (filterDto.keyword && filterDto.keyword.trim()) {
-        params.keyword = filterDto.keyword.trim();
-      }
-
-      if (filterDto.department_code) {
-        params.department_code = filterDto.department_code;
-      }
-
-      if (filterDto.fixed_asset_category_code) {
-        params.fixed_asset_category_code = filterDto.fixed_asset_category_code;
-      }
-
-      const response = await this.getFiltered(params);
-
-      return {
-        assets: FixedAsset.fromApiArray(response.data || []),
-        totalRecords: response.totalRecords || 0,
-        totalPages: response.totalPages || 1,
-        currentPage: response.currentPage || 1,
-        pageSize: response.pageSize || 20
-      };
-    } catch (error) {
-      console.error('Error fetching fixed assets:', error);
-      throw error;
+    if (filterDto.Keyword && filterDto.Keyword.trim()) {
+      params.Keyword = filterDto.Keyword.trim();
     }
+
+    if (filterDto.DepartmentCode) {
+      params.DepartmentCode = filterDto.DepartmentCode;
+    }
+
+    if (filterDto.FixedAssetCategoryCode) {
+      params.FixedAssetCategoryCode = filterDto.FixedAssetCategoryCode;
+    }
+
+    const response = await this.getFiltered(params);
+
+    if (!response || !Array.isArray(response.data)) {
+      throw new Error('Invalid response format from API');
+    }
+
+    return {
+      assets: FixedAsset.fromApiArray(response.data || []),
+      totalRecords: response.totalRecords || 0,
+      totalPages: response.totalPages || 1,
+      currentPage: response.currentPage || 1,
+      pageSize: response.pageSize || 20
+    };
   }
 
   /**
@@ -111,7 +111,7 @@ class FixedAssetApi extends BaseApi {
    * CreatedBy: HMTuan (29/10/2025)
    */
   async deleteFixedAsset(id) {
-    return await this.delete(id);
+    return await this.delete(id)
   }
 
   /**
@@ -121,7 +121,7 @@ class FixedAssetApi extends BaseApi {
    * CreatedBy: HMTuan (29/10/2025)
    */
   async deleteFixedAssets(ids) {
-    return await this.deleteBatch(ids);
+    return await this.deleteBatch(ids)
   }
 
   /**
@@ -131,12 +131,8 @@ class FixedAssetApi extends BaseApi {
    * CreatedBy: HMTuan (29/10/2025)
    */
   async duplicateFixedAsset(id) {
-    try {
-      const response = await this.axiosInstance.post(`/${this.resource}/${id}/duplicate`);
-      return FixedAsset.fromApi(response.data);
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.axiosInstance.post(`/${this.resource}/${id}/duplicate`);
+    return FixedAsset.fromApi(response.data);
   }
 }
 

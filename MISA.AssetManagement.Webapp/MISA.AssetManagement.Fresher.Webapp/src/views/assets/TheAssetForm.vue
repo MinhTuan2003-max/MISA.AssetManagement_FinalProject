@@ -5,14 +5,14 @@
       <div class="form-row">
         <div class="form-group col-4">
           <label class="form-label">Mã tài sản <span class="required">*</span></label>
-          <MsInput v-model="formData.fixed_asset_code" tabindex="-1" />
+          <MsInput v-model="formData.FixedAssetCode" tabindex="-1" />
         </div>
         <div class="form-group col-6">
           <label class="form-label">Tên tài sản <span class="required">*</span></label>
           <MsInput
-            v-model="formData.fixed_asset_name"
+            v-model="formData.FixedAssetName"
             placeholder="Nhập tên tài sản"
-            :error="errors.fixed_asset_name"
+            :error="errors.FixedAssetName"
             tabindex="1"
             @input="notifyFormChange"
           />
@@ -24,10 +24,10 @@
         <div class="form-group col-4">
           <label class="form-label">Mã bộ phận sử dụng <span class="required">*</span></label>
           <MsSelect
-            v-model="formData.department_code"
+            v-model="formData.DepartmentCode"
             :options="departmentOptions"
             placeholder="Chọn mã bộ phận sử dụng"
-            :error="errors.department_code"
+            :error="errors.DepartmentCode"
             tabindex="2"
             @input="notifyFormChange"
           />
@@ -43,10 +43,10 @@
         <div class="form-group col-4">
           <label class="form-label">Mã loại tài sản <span class="required">*</span></label>
           <MsSelect
-            v-model="formData.fixed_asset_category_code"
+            v-model="formData.FixedAssetCategoryCode"
             :options="categoryOptions"
             placeholder="Chọn mã loại tài sản"
-            :error="errors.fixed_asset_category_code"
+            :error="errors.FixedAssetCategoryCode"
             tabindex="3"
             @input="notifyFormChange"
           />
@@ -62,9 +62,9 @@
         <div class="form-group">
           <label class="form-label">Số lượng <span class="required">*</span></label>
           <MsNumberInput
-            v-model="formData.quantity"
+            v-model="formData.Quantity"
             :min="1"
-            :error="errors.quantity"
+            :error="errors.Quantity"
             tabindex="4"
             @input="notifyFormChange"
           />
@@ -72,10 +72,10 @@
         <div class="form-group">
           <label class="form-label">Nguyên giá <span class="required">*</span></label>
           <MsNumberInput
-            v-model="formData.cost"
+            v-model="formData.Cost"
             :min="0"
             format="currency"
-            :error="errors.cost"
+            :error="errors.Cost"
             tabindex="5"
             @input="notifyFormChange"
           />
@@ -83,10 +83,10 @@
         <div class="form-group">
           <label class="form-label">Tỷ lệ hao mòn (%) <span class="required">*</span></label>
           <MsNumberInput
-            v-model="formData.depreciation_rate"
+            v-model="formData.DepreciationRate"
             :min="0"
             format="currency"
-            :error="errors.depreciation_rate"
+            :error="errors.DepreciationRate"
             tabindex="5"
             @input="notifyFormChange"
           />
@@ -98,9 +98,9 @@
         <div class="form-group">
           <label class="form-label">Ngày mua <span class="required">*</span></label>
           <MsDatePicker
-            v-model="formData.purchase_date"
+            v-model="formData.PurchaseDate"
             placeholder="dd/mm/yyyy"
-            :error="errors.purchase_date"
+            :error="errors.PurchaseDate"
             tabindex="6"
             @input="notifyFormChange"
           />
@@ -108,16 +108,16 @@
         <div class="form-group">
           <label class="form-label">Ngày bắt đầu sử dụng <span class="required">*</span></label>
           <MsDatePicker
-            v-model="formData.start_using_date"
+            v-model="formData.StartUsingDate"
             placeholder="dd/mm/yyyy"
-            :error="errors.start_using_date"
+            :error="errors.StartUsingDate"
             tabindex="7"
             @input="notifyFormChange"
           />
         </div>
         <div class="form-group">
           <label class="form-label">Năm theo dõi</label>
-          <MsInput :model-value="formData.tracked_year" placeholder="Tự động" readonly tabindex="-1" />
+          <MsInput :model-value="formData.TrackedYear" placeholder="Tự động" readonly tabindex="-1" />
         </div>
       </div>
 
@@ -126,10 +126,10 @@
         <div class="form-group">
           <label class="form-label">Số năm sử dụng <span class="required">*</span></label>
           <MsNumberInput
-            v-model="formData.life_time"
+            v-model="formData.LifeTime"
             :min="0"
             format="currency"
-            :error="errors.life_time"
+            :error="errors.LifeTime"
             tabindex="5"
             @input="notifyFormChange"
           />
@@ -137,7 +137,7 @@
         <div class="form-group">
           <label class="form-label">Giá trị hao mòn năm <span class="required">*</span></label>
           <MsInput
-            :model-value="formatCurrency(formData.depreciation_value)"
+            :model-value="formatCurrency(formData.DepreciationValue)"
             placeholder="Tự động"
             readonly
             tabindex="-1"
@@ -195,20 +195,20 @@ function generateAssetCode() {
 }
 
 const formData = ref({
-  fixed_asset_code: '',
-  fixed_asset_name: '',
-  department_code: null,
-  fixed_asset_category_code: null,
-  quantity: 1,
-  cost: 0,
-  purchase_date: getTodayString(),
-  start_using_date: getTodayString(),
-  production_year: new Date().getFullYear(),
-  tracked_year: new Date().getFullYear(),
-  life_time: 0,
-  depreciation_rate: 0,
-  depreciation_value: 0,
-  description: ''
+  FixedAssetCode: '',
+  FixedAssetName: '',
+  DepartmentCode: null,
+  FixedAssetCategoryCode: null,
+  Quantity: 1,
+  Cost: 0,
+  PurchaseDate: getTodayString(),
+  StartUsingDate: getTodayString(),
+  ProductionYear: new Date().getFullYear(),
+  TrackedYear: new Date().getFullYear(),
+  LifeTime: 0,
+  DepreciationRate: 0,
+  DepreciationValue: 0,
+  Description: ''
 })
 
 const errors = ref({})
@@ -216,44 +216,44 @@ const errors = ref({})
 const dialogTitle = computed(() => (props.mode === 'add' ? 'Thêm tài sản' : 'Sửa tài sản'))
 
 const departmentName = computed(() => {
-  if (!formData.value.department_code) return ''
-  const dept = props.departmentOptions.find(d => d.value === formData.value.department_code)
+  if (!formData.value.DepartmentCode) return ''
+  const dept = props.departmentOptions.find(d => d.value === formData.value.DepartmentCode)
   return dept ? dept.fullName : ''
 })
 
 const categoryName = computed(() => {
-  if (!formData.value.fixed_asset_category_code) return ''
-  const cat = props.categoryOptions.find(c => c.value === formData.value.fixed_asset_category_code)
+  if (!formData.value.FixedAssetCategoryCode) return ''
+  const cat = props.categoryOptions.find(c => c.value === formData.value.FixedAssetCategoryCode)
   return cat ? cat.fullName : ''
 })
 
-watch(() => formData.value.fixed_asset_category_code, (newCode) => {
+watch(() => formData.value.FixedAssetCategoryCode, (newCode) => {
   if (!newCode) {
-    formData.value.life_time = 0
-    formData.value.depreciation_rate = 0
+    formData.value.LifeTime = 0
+    formData.value.DepreciationRate = 0
     return
   }
   const category = props.categoryOptions.find(c => c.value === newCode)
   if (category) {
-    formData.value.life_time = category.life_time || 0
-    formData.value.depreciation_rate = category.depreciation_rate || 0
+    formData.value.LifeTime = category.lifeTime || 0
+    formData.value.DepreciationRate = category.depreciationRate || 0
   }
 })
 
-watch(() => formData.value.purchase_date, (newDate) => {
+watch(() => formData.value.PurchaseDate, (newDate) => {
   if (!newDate) return
   const date = new Date(newDate)
   if (isNaN(date.getTime())) return
   const year = date.getFullYear()
-  formData.value.production_year = year
-  formData.value.tracked_year = year
+  formData.value.ProductionYear = year
+  formData.value.TrackedYear = year
 })
 
-watch([() => formData.value.cost, () => formData.value.depreciation_rate], ([cost, rate]) => {
+watch([() => formData.value.Cost, () => formData.value.DepreciationRate], ([cost, rate]) => {
   if (cost && rate) {
-    formData.value.depreciation_value = (cost * rate) / 100
+    formData.value.DepreciationValue = (cost * rate) / 100
   } else {
-    formData.value.depreciation_value = 0
+    formData.value.DepreciationValue = 0
   }
 })
 
@@ -284,20 +284,20 @@ function resetForm() {
   const newCode = props.mode === 'add' ? generateAssetCode() : ''
 
   formData.value = {
-    fixed_asset_code: newCode,
-    fixed_asset_name: '',
-    department_code: null,
-    fixed_asset_category_code: null,
-    quantity: 1,
-    cost: 0,
-    purchase_date: today,
-    start_using_date: today,
-    production_year: currentYear,
-    tracked_year: currentYear,
-    life_time: 0,
-    depreciation_rate: 0,
-    depreciation_value: 0,
-    description: ''
+    FixedAssetCode: newCode,
+    FixedAssetName: '',
+    DepartmentCode: null,
+    FixedAssetCategoryCode: null,
+    Quantity: 1,
+    Cost: 0,
+    PurchaseDate: today,
+    StartUsingDate: today,
+    ProductionYear: currentYear,
+    TrackedYear: currentYear,
+    LifeTime: 0,
+    DepreciationRate: 0,
+    DepreciationValue: 0,
+    Description: ''
   }
   errors.value = {}
 }
@@ -305,20 +305,20 @@ function resetForm() {
 function loadInitialData(data) {
   if (!data) return
   formData.value = {
-    fixed_asset_code: data.fixed_asset_code || '',
-    fixed_asset_name: data.fixed_asset_name || '',
-    department_code: data.department_code || null,
-    fixed_asset_category_code: data.fixed_asset_category_code || null,
-    quantity: data.quantity || 1,
-    cost: data.cost || 0,
-    purchase_date: data.purchase_date || getTodayString(),
-    start_using_date: data.start_using_date || getTodayString(),
-    production_year: data.production_year || new Date().getFullYear(),
-    tracked_year: data.tracked_year || new Date().getFullYear(),
-    life_time: data.life_time || 0,
-    depreciation_rate: data.depreciation_rate || 0,
-    depreciation_value: data.depreciation_value || 0,
-    description: data.description || ''
+    FixedAssetCode: data.FixedAssetCode || '',
+    FixedAssetName: data.FixedAssetName || '',
+    DepartmentCode: data.DepartmentCode || null,
+    FixedAssetCategoryCode: data.FixedAssetCategoryCode || null,
+    Quantity: data.Quantity || 1,
+    Cost: data.Cost || 0,
+    PurchaseDate: data.PurchaseDate || getTodayString(),
+    StartUsingDate: data.StartUsingDate || getTodayString(),
+    ProductionYear: data.ProductionYear || new Date().getFullYear(),
+    TrackedYear: data.TrackedYear || new Date().getFullYear(),
+    LifeTime: data.LifeTime || 0,
+    DepreciationRate: data.DepreciationRate || 0,
+    DepreciationValue: data.DepreciationValue || 0,
+    Description: data.Description || ''
   }
 }
 
@@ -331,15 +331,15 @@ function handleSubmit() {
   }
 
   const submitData = {
-    fixed_asset_code: formData.value.fixed_asset_code.trim(),
-    fixed_asset_name: formData.value.fixed_asset_name.trim(),
-    department_code: formData.value.department_code,
-    fixed_asset_category_code: formData.value.fixed_asset_category_code,
-    quantity: parseInt(formData.value.quantity, 10),
-    cost: parseFloat(formData.value.cost),
-    purchase_date: formData.value.purchase_date,
-    start_using_date: formData.value.start_using_date,
-    description: formData.value.description?.trim() || ''
+    FixedAssetCode: formData.value.FixedAssetCode.trim(),
+    FixedAssetName: formData.value.FixedAssetName.trim(),
+    DepartmentCode: formData.value.DepartmentCode,
+    FixedAssetCategoryCode: formData.value.FixedAssetCategoryCode,
+    Quantity: parseInt(formData.value.Quantity, 10),
+    Cost: parseFloat(formData.value.Cost),
+    PurchaseDate: formData.value.PurchaseDate,
+    StartUsingDate: formData.value.StartUsingDate,
+    Description: formData.value.Description?.trim() || ''
   }
 
   emit('submit', submitData)

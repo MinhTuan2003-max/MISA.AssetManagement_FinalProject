@@ -477,7 +477,7 @@ function handleKeyDown(e) {
 }
 
 /**
- * ✅ Cập nhật selection khi Shift được giữ - GỬI SELECT-ITEM
+ * Cập nhật selection khi Shift được giữ - GỬI SELECT-ITEM
  */
 function updateSelectionWithShift() {
   if (lastSelectedRow.value === null) {
@@ -492,7 +492,7 @@ function updateSelectionWithShift() {
     selectedRows.value.push(i)
   }
 
-  // ✅ Emit select-item cho tất cả items trong range
+  // Emit select-item cho tất cả items trong range
   for (let i = start; i <= end; i++) {
     const itemId = getItemId(sortedItems.value[i])
     emit('select-item', itemId)
@@ -500,7 +500,7 @@ function updateSelectionWithShift() {
 }
 
 /**
- * ✅ Toggle chọn/bỏ chọn 1 row - GỬI SELECT-ITEM
+ * Toggle chọn/bỏ chọn 1 row - GỬI SELECT-ITEM
  */
 function toggleRowSelection(rowIndex) {
   const index = selectedRows.value.indexOf(rowIndex)
@@ -513,7 +513,7 @@ function toggleRowSelection(rowIndex) {
 
   lastSelectedRow.value = rowIndex
 
-  // ✅ Emit select-item để parent xử lý toggle
+  // Emit select-item để parent xử lý toggle
   const itemId = getItemId(sortedItems.value[rowIndex])
   emit('select-item', itemId)
 }

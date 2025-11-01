@@ -24,7 +24,7 @@ export function useFixedAssets() {
 
   /**
    * Hàm tải danh sách lựa chọn bộ lọc (Loại tài sản, Phòng ban)
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   async function loadFilterOptions() {
     try {
@@ -43,7 +43,7 @@ export function useFixedAssets() {
 
   /**
    * Hàm tải danh sách tên tắt - mã cho select (Loại tài sản, Phòng ban)
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   async function loadShortNameSelectOptions() {
     try {
@@ -62,7 +62,7 @@ export function useFixedAssets() {
 
   /**
    * Hàm tải danh sách tài sản theo bộ lọc và phân trang
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   async function loadFixedAssets() {
     loading.value = true;
@@ -70,11 +70,11 @@ export function useFixedAssets() {
 
     try {
       const filterDto = {
-        keyword: searchQuery.value || null,
-        department_code: filterDepartment.value || null,
-        fixed_asset_category_code: filterCategory.value || null,
-        page_number: currentPage.value,
-        page_size: pageSize.value
+        Keyword: searchQuery.value || null,
+        DepartmentCode: filterDepartment.value || null,
+        FixedAssetCategoryCode: filterCategory.value || null,
+        PageNumber: currentPage.value,
+        PageSize: pageSize.value
       };
 
       const response = await fixedAssetApi.getFixedAssets(filterDto);
@@ -119,23 +119,23 @@ export function useFixedAssets() {
 
   /**
    * Computed: kiểm tra xem tất cả tài sản trên trang hiện tại có được chọn không
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   const isAllSelected = computed(() =>
     paginatedAssets.value.length > 0 &&
     paginatedAssets.value.every(asset =>
-      selectedIds.value.includes(asset?.fixed_asset_id)
+      selectedIds.value.includes(asset?.FixedAssetId)
     )
   );
 
   /**
    * Hàm chọn tất cả tài sản trên trang hiện tại
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   function handleSelectAll() {
     if (isAllSelected.value) {
       const currentPageIds = paginatedAssets.value
-        .map(asset => asset?.fixed_asset_id)
+        .map(asset => asset?.FixedAssetId)
         .filter(id => id !== null);
 
       selectedIds.value = selectedIds.value.filter(
@@ -143,7 +143,7 @@ export function useFixedAssets() {
       );
     } else {
       const newIds = paginatedAssets.value
-        .map(asset => asset?.fixed_asset_id)
+        .map(asset => asset?.FixedAssetId)
         .filter(id => id !== null && !selectedIds.value.includes(id));
 
       selectedIds.value = [...selectedIds.value, ...newIds];
@@ -208,34 +208,34 @@ export function useFixedAssets() {
 
   /**
    * Computed: tổng số lượng tài sản
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   const totalQuantity = computed(() =>
-    filteredAssets.value.reduce((sum, asset) => sum + (asset.quantity || 0), 0)
+    filteredAssets.value.reduce((sum, asset) => sum + (asset.Quantity || 0), 0)
   );
 
   /**
    * Computed: tổng giá trị tài sản
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   const totalCost = computed(() =>
-    filteredAssets.value.reduce((sum, asset) => sum + (asset.cost || 0), 0)
+    filteredAssets.value.reduce((sum, asset) => sum + (asset.Cost || 0), 0)
   );
 
   /**
    * Computed: tổng khấu hao lũy kế
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   const totalDepreciation = computed(() =>
-    filteredAssets.value.reduce((sum, asset) => sum + (asset.accumulated_depreciation || 0), 0)
+    filteredAssets.value.reduce((sum, asset) => sum + (asset.AccumulatedDepreciation || 0), 0)
   );
 
   /**
    * Computed: tổng giá trị còn lại
-   * CreatedBy: HMTuan (29/10/2025)
+   * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
    */
   const totalResidual = computed(() =>
-    filteredAssets.value.reduce((sum, asset) => sum + (asset.remaining_value || 0), 0)
+    filteredAssets.value.reduce((sum, asset) => sum + (asset.RemainingValue || 0), 0)
   );
 
   /**

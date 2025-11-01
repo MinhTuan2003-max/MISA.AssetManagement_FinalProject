@@ -105,7 +105,7 @@
       :initial-data="editingAssetData"
       :category-options="categoryOptions"
       :department-options="departmentOptions"
-      :existing-asset-codes="tableData.map(a => a.AssetCode || a.fixed_asset_code)"
+      :existing-asset-codes="tableData.map(a => a.AssetCode || a.FixedAssetCode)"
       @close="handleCloseForm"
       @submit="handleSubmitAsset"
     />
@@ -346,8 +346,8 @@ const deleteDialogDescription = computed(() => {
   if (deleteDialogData.value.type === 'single') {
     const asset = deleteDialogData.value.asset
     if (!asset) return 'Bạn có muốn xóa tài sản này không?'
-    const code = asset.AssetCode || asset.fixed_asset_code || 'N/A'
-    const name = asset.AssetName || asset.fixed_asset_name || 'N/A'
+    const code = asset.AssetCode || asset.FixedAssetCode || 'N/A'
+    const name = asset.AssetName || asset.FixedAssetName || 'N/A'
     return `Bạn có muốn xóa tài sản ${code} - ${name}?`
   }
   const count = selectedIds.value.length
@@ -374,7 +374,7 @@ async function handleAddAsset() {
 //#region CRUD Actions - Edit
 async function handleEdit(item) {
   try {
-    const assetId = item.fixed_asset_id || item.CandidateID || item.id
+    const assetId = item.FixedAssetId || item.CandidateID || item.id
     if (!assetId) {
       toastError('Không thể xác định ID tài sản')
       return
@@ -413,7 +413,6 @@ async function handleSubmitAsset(assetData) {
     await loadFixedAssets()
     closePopup()
   } catch (err) {
-    console.error('Submit error:', err)
     if (err.response?.data?.errors) {
       toastError(`Lỗi validation: ${JSON.stringify(err.response.data.errors, null, 2)}`)
     } else {
@@ -486,7 +485,6 @@ function handleSaveChangesCancel() {
   // Chỉ tắt dialog 3, giữ lại form edit
 }
 
-
 /**
  * Dialog 3: Lưu thay đổi - Bấm "Không lưu" (tắt form + dialog)
  */
@@ -527,7 +525,7 @@ function handleDeleteSelected() {
 
   if (selectedIds.value.length === 1) {
     const asset = tableData.value.find(a => {
-      const id = a.CandidateID || a.fixed_asset_id || a.id
+      const id = a.CandidateID || a.FixedAssetId || a.id
       return id === selectedIds.value[0]
     })
     if (!asset) {
@@ -551,15 +549,15 @@ async function confirmDelete() {
         return
       }
 
-      const assetId = asset.CandidateID || asset.fixed_asset_id || asset.id
+      const assetId = asset.CandidateID || asset.FixedAssetId || asset.id
       if (!assetId) {
         toastError('Không thể xác định ID tài sản')
         return
       }
 
       await deleteFixedAsset(assetId)
-      const code = asset.AssetCode || asset.fixed_asset_code || 'N/A'
-      const name = asset.AssetName || asset.fixed_asset_name || 'N/A'
+      const code = asset.AssetCode || asset.FixedAssetCode || 'N/A'
+      const name = asset.AssetName || asset.FixedAssetName || 'N/A'
       toastDelete(`Tài sản ${code} - ${name} đã bị xóa.`)
     } else {
       await deleteSelectedAssets()
@@ -593,14 +591,14 @@ function handleDuplicate(item) {
     return
   }
 
-  const assetId = item.CandidateID || item.fixed_asset_id || item.id
+  const assetId = item.CandidateID || item.FixedAssetId || item.id
   if (!assetId) {
     toastError('Không thể xác định ID tài sản')
     return
   }
 
   assetToDuplicate = item
-  dialogMessage.value = `Bạn có muốn nhân bản tài sản <strong>${item.AssetName || item.fixed_asset_name}</strong> không?`
+  dialogMessage.value = `Bạn có muốn nhân bản tài sản <strong>${item.AssetName || item.FixedAssetName}</strong> không?`
   showDuplicateDialog.value = true
 }
 
@@ -609,7 +607,7 @@ function handleDuplicate(item) {
  */
 async function confirmDuplicate() {
   showDuplicateDialog.value = false
-  const assetId = assetToDuplicate.CandidateID || assetToDuplicate.fixed_asset_id || assetToDuplicate.id
+  const assetId = assetToDuplicate.CandidateID || assetToDuplicate.FixedAssetId || assetToDuplicate.id
   await duplicateFixedAsset(assetId)
 
   try {

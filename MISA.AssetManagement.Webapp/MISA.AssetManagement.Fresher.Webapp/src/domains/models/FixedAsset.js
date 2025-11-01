@@ -2,6 +2,7 @@
  * Lớp mô hình đại diện cho Tài sản cố định (FixedAsset)
  * Dùng để ánh xạ dữ liệu từ API và chuẩn hóa dữ liệu hiển thị trong UI.
  * CreatedBy: HMTuan (30/10/2025)
+ * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase
  */
 export class FixedAsset {
   /**
@@ -9,43 +10,48 @@ export class FixedAsset {
    * @param {Object} [data={}] - Dữ liệu khởi tạo tài sản (nhận từ API hoặc form)
    */
   constructor(data = {}) {
-    // #region Thuộc tính cơ bản
-    this.fixed_asset_id = data.fixed_asset_id || null
-    this.fixed_asset_code = data.fixed_asset_code || ''
-    this.fixed_asset_name = data.fixed_asset_name || ''
+// #region Thuộc tính cơ bản
+    this.FixedAssetId = data.FixedAssetId || data.fixedAssetId || null
+    this.FixedAssetCode = data.FixedAssetCode || data.fixedAssetCode || ''
+    this.FixedAssetName = data.FixedAssetName || data.fixedAssetName || ''
     // #endregion
 
     // #region Thông tin bộ phận sử dụng
-    this.department_id = data.department_id || null
-    this.department_code = data.department_code || ''
-    this.department_name = data.department_name || ''
+    this.DepartmentId = data.DepartmentId || data.departmentId || null
+    this.DepartmentCode = data.DepartmentCode || data.departmentCode || ''
+    this.DepartmentName = data.DepartmentName || data.departmentName || ''
     // #endregion
 
     // #region Thông tin loại tài sản
-    this.fixed_asset_category_id = data.fixed_asset_category_id || null
-    this.fixed_asset_category_code = data.fixed_asset_category_code || ''
-    this.fixed_asset_category_name = data.fixed_asset_category_name || ''
+    this.FixedAssetCategoryId = data.FixedAssetCategoryId || data.fixedAssetCategoryId || null
+    this.FixedAssetCategoryCode = data.FixedAssetCategoryCode || data.fixedAssetCategoryCode || ''
+    this.FixedAssetCategoryName = data.FixedAssetCategoryName || data.fixedAssetCategoryName || ''
     // #endregion
 
     // #region Thông tin giá trị, hao mòn
-    this.quantity = data.quantity || 0
-    this.cost = data.cost || 0
-    this.life_time = data.life_time || 0
-    this.depreciation_rate = data.depreciation_rate || 0
-    this.depreciation_value = data.depreciation_value || 0
-    this.accumulated_depreciation = data.accumulated_depreciation || 0
-    this.remaining_value = data.remaining_value || 0
+    this.Quantity = data.Quantity || data.quantity || 0
+    this.Cost = data.Cost || data.cost || 0
+    this.LifeTime = data.LifeTime || data.lifeTime || 0
+    this.DepreciationRate = data.DepreciationRate || data.depreciationRate || 0
+    this.DepreciationValue = data.DepreciationValue || data.depreciationValue || 0
+    this.AccumulatedDepreciation = data.DepreciationValue || data.depreciationValue || 0
+    this.RemainingValue = data.Cost - data.DepreciationValue || data.cost - data.depreciationValue || 0
     // #endregion
 
     // #region Thông tin thời gian
-    this.purchase_date = data.purchase_date || ''
-    this.start_using_date = data.start_using_date || ''
-    this.production_year = data.production_year || 0
-    this.tracked_year = data.tracked_year || 0
+    this.PurchaseDate = data.PurchaseDate || data.purchaseDate || ''
+    this.StartUsingDate = data.StartUsingDate || data.startUsingDate || ''
+    this.ProductionYear = data.ProductionYear || data.productionYear || 0
+    this.TrackedYear = data.TrackedYear || data.trackedYear || 0
     // #endregion
 
     // #region Mô tả
-    this.description = data.description || ''
+    this.Description = data.Description || data.description || ''
+    this.IsActive = data.IsActive || data.isActive || true
+    this.CreatedDate = data.CreatedDate || data.createdDate || ''
+    this.CreatedBy = data.CreatedBy || data.createdBy || null
+    this.ModifiedDate = data.ModifiedDate || data.modifiedDate || ''
+    this.ModifiedBy = data.ModifiedBy || data.modifiedBy || null
     // #endregion
   }
 
@@ -53,32 +59,32 @@ export class FixedAsset {
 
   /** @returns {string|null} ID tài sản */
   get id() {
-    return this.fixed_asset_id
+    return this.FixedAssetId
   }
 
   /** @returns {string} Mã tài sản */
   get assetCode() {
-    return this.fixed_asset_code
+    return this.FixedAssetCode
   }
 
   /** @returns {string} Tên tài sản */
   get assetName() {
-    return this.fixed_asset_name
+    return this.FixedAssetName
   }
 
   /** @returns {string} Tên loại tài sản */
   get categoryName() {
-    return this.fixed_asset_category_name
+    return this.FixedAssetCategoryName
   }
 
   /** @returns {string} Tên bộ phận sử dụng */
   get departmentName() {
-    return this.department_name
+    return this.DepartmentName
   }
 
   /** @returns {number} Giá trị hao mòn năm */
   get depreciationValue() {
-    return this.depreciation_value
+    return this.DepreciationValue
   }
   // #endregion
 
@@ -106,28 +112,28 @@ export class FixedAsset {
    */
   toEditFormat() {
     return {
-      fixed_asset_id: this.fixed_asset_id,
-      fixed_asset_code: this.fixed_asset_code,
-      fixed_asset_name: this.fixed_asset_name,
+      FixedAssetId: this.FixedAssetId,
+      FixedAssetCode: this.FixedAssetCode,
+      FixedAssetName: this.FixedAssetName,
 
-      department_code: this.department_code,
-      department_name: this.department_name,
+      DepartmentCode: this.DepartmentCode,
+      DepartmentName: this.DepartmentName,
 
-      fixed_asset_category_code: this.fixed_asset_category_code,
-      fixed_asset_category_name: this.fixed_asset_category_name,
+      FixedAssetCategoryCode: this.FixedAssetCategoryCode,
+      FixedAssetCategoryName: this.FixedAssetCategoryName,
 
-      quantity: this.quantity,
-      cost: this.cost,
+      Quantity: this.Quantity,
+      Cost: this.Cost,
 
-      life_time: this.life_time,
-      depreciation_rate: this.depreciation_rate,
-      depreciation_value: this.depreciation_value,
+      LifeTime: this.LifeTime,
+      DepreciationRate: this.DepreciationRate,
+      DepreciationValue: this.DepreciationValue,
 
-      purchase_date: this.formatDateString(this.purchase_date),
-      production_year: this.production_year,
-      tracked_year: this.tracked_year,
+      PurchaseDate: this.formatDateString(this.PurchaseDate),
+      ProductionYear: this.ProductionYear,
+      TrackedYear: this.TrackedYear,
 
-      description: this.description
+      Description: this.Description
     }
   }
 
@@ -137,54 +143,35 @@ export class FixedAsset {
    */
   toTableFormat() {
     return {
-      fixed_asset_id: this.fixed_asset_id,
-      CandidateID: this.fixed_asset_id,
+      FixedAssetId: this.FixedAssetId,
+      CandidateID: this.FixedAssetId,
 
-      fixed_asset_code: this.fixed_asset_code,
-      AssetCode: this.fixed_asset_code,
+      FixedAssetCode: this.FixedAssetCode,
+      AssetCode: this.FixedAssetCode,
 
-      fixed_asset_name: this.fixed_asset_name,
-      AssetName: this.fixed_asset_name,
+      FixedAssetName: this.FixedAssetName,
+      AssetName: this.FixedAssetName,
 
-      department_code: this.department_code,
-      DepartmentCode: this.department_code,
-      department_name: this.department_name,
-      DepartmentName: this.department_name,
+      DepartmentCode: this.DepartmentCode,
+      DepartmentName: this.DepartmentName,
 
-      fixed_asset_category_code: this.fixed_asset_category_code,
-      FixedAssetCategoryCode: this.fixed_asset_category_code,
-      fixed_asset_category_name: this.fixed_asset_category_name,
-      AssetTypeName: this.fixed_asset_category_name,
+      FixedAssetCategoryCode: this.FixedAssetCategoryCode,
+      FixedAssetCategoryName: this.FixedAssetCategoryName,
+      AssetTypeName: this.FixedAssetCategoryName,
 
-      quantity: this.quantity,
-      Quantity: this.quantity,
+      Quantity: this.Quantity,
+      Cost: this.Cost,
 
-      cost: this.cost,
-      Cost: this.cost,
+      AccumulatedDepreciation: this.AccumulatedDepreciation,
+      RemainingValue: this.RemainingValue,
+      DepreciationValue: this.DepreciationValue,
 
-      accumulated_depreciation: this.accumulated_depreciation,
-      AccumulatedDepreciation: this.accumulated_depreciation,
+      PurchaseDate: this.PurchaseDate,
+      ProductionYear: this.ProductionYear,
 
-      remaining_value: this.remaining_value,
-      RemainingValue: this.remaining_value,
-
-      depreciation_value: this.depreciation_value,
-      DepreciationValue: this.depreciation_value,
-
-      purchase_date: this.purchase_date,
-      PurchaseDate: this.purchase_date,
-
-      production_year: this.production_year,
-      ProductionYear: this.production_year,
-
-      tracked_year: this.tracked_year,
-      TrackedYear: this.tracked_year,
-
-      life_time: this.life_time,
-      LifeTime: this.life_time,
-
-      depreciation_rate: this.depreciation_rate,
-      DepreciationRate: this.depreciation_rate
+      TrackedYear: this.TrackedYear,
+      LifeTime: this.LifeTime,
+      DepreciationRate: this.DepreciationRate,
     }
   }
   // #endregion
