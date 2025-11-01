@@ -87,6 +87,7 @@
               @add="handleAddAsset"
               @edit="handleEdit"
               @delete="handleDelete"
+              @delete-multiple="handleDeleteMultiple"
               @duplicate="handleDuplicate"
               @row-click="handleRowClick"
               @page-change="handlePageChange"
@@ -533,6 +534,21 @@ function handleDeleteSelected() {
       return
     }
     deleteDialogData.value = { type: 'single', asset }
+  } else {
+    deleteDialogData.value = { type: 'multiple', asset: null }
+  }
+
+  showDeleteDialog.value = true
+}
+
+function handleDeleteMultiple(items) {
+  if (!items || items.length === 0) {
+    toastError('Không có tài sản nào được chọn')
+    return
+  }
+
+  if (items.length === 1) {
+    deleteDialogData.value = { type: 'single', asset: items[0] }
   } else {
     deleteDialogData.value = { type: 'multiple', asset: null }
   }
