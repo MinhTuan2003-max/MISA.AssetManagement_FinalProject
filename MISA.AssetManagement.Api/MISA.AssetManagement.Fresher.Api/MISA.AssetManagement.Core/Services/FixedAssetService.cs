@@ -309,17 +309,16 @@ namespace MISA.Core.Services
                 if (dto.depreciation_rate > 1m)
                 {
                     dto.depreciation_rate /= 100;
-                    Console.WriteLine(dto.depreciation_rate);
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 5);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
                 }
                 else
                 {
-                    decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    decimal expectedRate = Math.Round(1m / dto.life_time, 5);
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
@@ -375,7 +374,7 @@ namespace MISA.Core.Services
                     dto.depreciation_rate /= 100;
                     Console.WriteLine(dto.depreciation_rate);
                     decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }
@@ -383,7 +382,7 @@ namespace MISA.Core.Services
                 else
                 {
                     decimal expectedRate = Math.Round(1m / dto.life_time, 2);
-                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.000001m)
+                    if (Math.Abs(dto.depreciation_rate - expectedRate) > 0.99999999m)
                     {
                         errors.Add("Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng");
                     }

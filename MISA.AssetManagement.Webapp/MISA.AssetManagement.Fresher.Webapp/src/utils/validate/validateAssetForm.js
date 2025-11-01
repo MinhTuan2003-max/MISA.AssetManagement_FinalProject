@@ -73,7 +73,7 @@ export function validateAssetForm(formData) {
       const actualRate = formData.depreciation_rate
 
       // So sánh sai số cho phép nhỏ (tránh lỗi số thực)
-      const EPSILON = 0.000001
+      const EPSILON = 0.9999999
       if (actualRate !== undefined && Math.abs(actualRate - expectedRate) > EPSILON) {
         errors.depreciation_rate = 'Tỷ lệ hao mòn phải bằng 1/Số năm sử dụng'
       }

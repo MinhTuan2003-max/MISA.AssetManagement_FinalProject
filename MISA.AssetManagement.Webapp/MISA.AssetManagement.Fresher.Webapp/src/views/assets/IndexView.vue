@@ -641,7 +641,6 @@ async function handleExportExcel() {
 .filter-group {
   display: flex;
   gap: 8px;
-  margin-left: 8px;
 }
 
 .toolbar-right {
@@ -864,7 +863,6 @@ async function handleExportExcel() {
 }
 
 @media (max-width: 1366px) {
-  .toolbar { padding: 12px; }
   .toolbar-left, .toolbar-right { gap: 6px; }
   .filter-group { gap: 6px; }
 }
@@ -874,5 +872,148 @@ async function handleExportExcel() {
   .toolbar-left, .toolbar-right { width: 100%; justify-content: space-between; }
   .filter-group { flex-wrap: wrap; }
   .toast-container { top: 10px; right: 10px; left: 10px; }
+}
+
+/* Breakpoint Mobile: < 576px */
+@media (max-width: 575.98px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .toolbar-left {
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toolbar-left > div:first-child {
+    width: 100%;
+  }
+
+  .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 0;
+  }
+
+  .toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .add-btn {
+    flex: 1;
+    min-width: 100px;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .toolbar-button {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .content-card {
+    border: none;
+    box-shadow: none;
+  }
+
+  .toast-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .filter-loading {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .filter-spinner {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+/* Breakpoint Tablet: 576px - 992px */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .toolbar {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .toolbar-left {
+    gap: 8px;
+  }
+
+  .filter-group {
+    gap: 6px;
+  }
+
+  .toolbar-right {
+    gap: 6px;
+  }
+
+  .add-btn {
+    width: 100px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .toolbar-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .toast-container {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+/* Breakpoint Desktop: >= 992px */
+@media (min-width: 992px) {
+  .toolbar {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .toolbar-left {
+    flex-direction: row;
+    flex: 1;
+    gap: 8px;
+  }
+
+  .filter-group {
+    gap: 8px;
+  }
+
+  .toolbar-right {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .add-btn {
+    width: 110px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .toolbar-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .toast-container {
+    top: 20px;
+    right: 20px;
+  }
 }
 </style>

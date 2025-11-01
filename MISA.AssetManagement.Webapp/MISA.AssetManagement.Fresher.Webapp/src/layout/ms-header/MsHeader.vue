@@ -258,4 +258,204 @@ function decreaseYear() {
   width: 8px;
   height: 8px;
 }
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Breakpoint Mobile: < 576px */
+@media (max-width: 575.98px) {
+  .app-header {
+    height: 50px;
+    padding: 0 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header-left {
+    width: 100%;
+    order: 1;
+  }
+
+  .app-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .header-right {
+    width: 100%;
+    order: 2;
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  .header-info-group {
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .app-content {
+    font-size: 14px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .year-input {
+    width: 100px;
+    height: 28px;
+    padding: 0 3px 0 6px;
+    gap: 4px;
+  }
+
+  .year-prefix {
+    font-size: 12px;
+  }
+
+  .year-input input {
+    width: 45px;
+    font-size: 12px;
+    height: 14px;
+  }
+
+  .icons-group {
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .icon-action {
+    width: 22px;
+    height: 22px;
+  }
+
+  .bell-icon,
+  .show-list-icon,
+  .question-icon,
+  .avatar-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Breakpoint Tablet: 576px - 768px */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .app-header {
+    height: 48px;
+    padding: 0 16px;
+    gap: 16px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+
+  .header-right {
+    gap: 16px;
+  }
+
+  .header-info-group {
+    gap: 16px;
+  }
+
+  .app-content {
+    font-size: 14px;
+  }
+
+  .year-input {
+    width: 105px;
+    height: 30px;
+  }
+
+  .year-prefix {
+    font-size: 12px;
+  }
+
+  .year-input input {
+    width: 48px;
+    font-size: 12px;
+  }
+
+  .icons-group {
+    gap: 16px;
+  }
+
+  .icon-action {
+    width: 22px;
+    height: 22px;
+  }
+
+  .bell-icon,
+  .show-list-icon,
+  .question-icon,
+  .avatar-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Breakpoint Desktop: >= 768px */
+@media (min-width: 768px) {
+  .app-header {
+    height: 44px;
+    padding: 0 20px;
+    flex-wrap: nowrap;
+  }
+
+  .header-left {
+    width: auto;
+  }
+
+  .header-right {
+    gap: 20px;
+  }
+
+  .header-info-group {
+    gap: 20px;
+  }
+
+  .app-content {
+    font-size: 16px;
+  }
+
+  .year-input {
+    width: 112px;
+    height: 30px;
+  }
+
+  .icons-group {
+    gap: 20px;
+  }
+}
+
+/* Smooth transitions */
+@media (max-width: 575.98px) {
+  .app-header {
+    height: 70px;
+    padding: 5px 5px;
+  }
+
+  .app-header,
+  .app-title,
+  .app-content,
+  .year-input,
+  .icons-group {
+    transition: all 0.3s ease;
+  }
+}
+
+/* Mobile: Ẩn tên đơn vị nếu space quá hẹp */
+@media (max-width: 480px) {
+  .app-content {
+    font-size: 13px;
+    max-width: 80px;
+  }
+
+  .header-info-group {
+    gap: 8px;
+  }
+
+  .icons-group {
+    gap: 10px;
+  }
+}
 </style>
+

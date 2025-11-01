@@ -249,8 +249,10 @@ const sortField = ref(props.defaultSort?.field || null)
 const sortOrder = ref(props.defaultSort?.order || 1)
 const columnWidths = ref({})
 const resizing = ref(null)
-const focusedRow = ref(null)
 const contextMenu = ref(null)
+const selectedRows = ref([]) // Mảng index các rows đang chọn (keyboard)
+const focusedRow = ref(0) // Row đang focus
+const lastSelectedRow = ref(null) // Row cuối cùng được chọn (để Shift select range)
 // #endregion
 
 // #region Refs
@@ -374,41 +376,163 @@ function isSelected(item) {
 }
 
 /**
- * Xử lý phím điều hướng trong bảng
+ * Xử lý phím điều hướng trong bảng - GỬI SELECT-ITEM CHO PARENT
  */
 function handleKeyDown(e) {
-  if (!props.items.length) return
+  if (!sortedItems.value.length) return
+
+  const isCtrl = e.ctrlKey || e.metaKey
+  const isShift = e.shiftKey
 
   switch (e.key) {
+    // ARROW DOWN
     case 'ArrowDown':
       e.preventDefault()
       focusedRow.value = Math.min(focusedRow.value + 1, sortedItems.value.length - 1)
+
+      if (isShift) {
+        updateSelectionWithShift()
+      }
+
       scrollToFocusedRow()
       break
+
+    // ARROW UP
     case 'ArrowUp':
       e.preventDefault()
       focusedRow.value = Math.max(focusedRow.value - 1, 0)
+
+      if (isShift) {
+        updateSelectionWithShift()
+      }
+
       scrollToFocusedRow()
       break
+
+    // SPACE: Toggle chọn/bỏ chọn row focus
+    case ' ':
+      e.preventDefault()
+
+      if (isCtrl) {
+        // Ctrl+Space: toggle row + emit select-item
+        toggleRowSelection(focusedRow.value)
+      } else if (isShift) {
+        // Shift+Space: chọn dải từ lastSelectedRow → focusedRow
+        updateSelectionWithShift()
+      } else {
+        // Space thường: chọn CHỈ row focus
+        selectedRows.value = [focusedRow.value]
+        lastSelectedRow.value = focusedRow.value
+        const itemId = getItemId(sortedItems.value[focusedRow.value])
+        emit('select-item', itemId)
+      }
+
+      scrollToFocusedRow()
+      break
+
+    // ENTER: Mở/xem chi tiết row focus
     case 'Enter':
       e.preventDefault()
       emit('row-click', sortedItems.value[focusedRow.value])
       break
+
+    // DELETE: Xóa các row đã chọn
     case 'Delete':
       e.preventDefault()
-      const focusedItem = sortedItems.value[focusedRow.value]
-      if (focusedItem) emit('delete', focusedItem)
+
+      if (selectedRows.value.length === 0) {
+        // Nếu không có gì được chọn, xóa row focus
+        const itemId = getItemId(sortedItems.value[focusedRow.value])
+        emit('delete', [itemId])
+      } else {
+        // Xóa tất cả rows đã chọn - GỬI ID, KHÔNG PHẢI ITEM
+        const itemIdsToDelete = selectedRows.value.map(i => getItemId(sortedItems.value[i]))
+        emit('delete', itemIdsToDelete)
+        console.log(itemIdsToDelete)
+      }
+      break
+
+    // Ctrl+A: Chọn tất cả
+    case 'a':
+    case 'A':
+      if (isCtrl) {
+        e.preventDefault()
+        selectedRows.value = sortedItems.value.map((_, index) => index)
+        lastSelectedRow.value = sortedItems.value.length - 1
+
+        // Emit select-item cho tất cả
+        sortedItems.value.forEach(item => {
+          emit('select-item', getItemId(item))
+        })
+      }
+      break
+
+    // Escape: Bỏ chọn tất cả
+    case 'Escape':
+      e.preventDefault()
+      selectedRows.value = []
+      lastSelectedRow.value = null
       break
   }
+}
+
+/**
+ * ✅ Cập nhật selection khi Shift được giữ - GỬI SELECT-ITEM
+ */
+function updateSelectionWithShift() {
+  if (lastSelectedRow.value === null) {
+    lastSelectedRow.value = 0
+  }
+
+  const start = Math.min(lastSelectedRow.value, focusedRow.value)
+  const end = Math.max(lastSelectedRow.value, focusedRow.value)
+
+  selectedRows.value = []
+  for (let i = start; i <= end; i++) {
+    selectedRows.value.push(i)
+  }
+
+  // ✅ Emit select-item cho tất cả items trong range
+  for (let i = start; i <= end; i++) {
+    const itemId = getItemId(sortedItems.value[i])
+    emit('select-item', itemId)
+  }
+}
+
+/**
+ * ✅ Toggle chọn/bỏ chọn 1 row - GỬI SELECT-ITEM
+ */
+function toggleRowSelection(rowIndex) {
+  const index = selectedRows.value.indexOf(rowIndex)
+
+  if (index > -1) {
+    selectedRows.value.splice(index, 1)
+  } else {
+    selectedRows.value.push(rowIndex)
+  }
+
+  lastSelectedRow.value = rowIndex
+
+  // ✅ Emit select-item để parent xử lý toggle
+  const itemId = getItemId(sortedItems.value[rowIndex])
+  emit('select-item', itemId)
 }
 
 /**
  * Cuộn đến dòng đang được focus trong bảng
  */
 function scrollToFocusedRow() {
-  const rows = tableWrapperRef.value?.querySelectorAll('tbody tr')
-  if (rows && rows[focusedRow.value]) {
-    rows[focusedRow.value].scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  const tableBody = document.querySelector('.table-body')
+  if (!tableBody) return
+
+  const rows = tableBody.querySelectorAll('tr')
+  const focusedRowEl = rows[focusedRow.value]
+
+  if (focusedRowEl) {
+    focusedRowEl.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest'
+    })
   }
 }
 
@@ -484,10 +608,6 @@ function handleMouseUp() {
  */
 function syncScrollFromTable(e) {
   if (scrollbarRef.value) scrollbarRef.value.scrollLeft = e.target.scrollLeft
-}
-
-function syncScrollFromScrollbar(e) {
-  if (tableWrapperRef.value) tableWrapperRef.value.scrollLeft = e.target.scrollLeft
 }
 
 /**

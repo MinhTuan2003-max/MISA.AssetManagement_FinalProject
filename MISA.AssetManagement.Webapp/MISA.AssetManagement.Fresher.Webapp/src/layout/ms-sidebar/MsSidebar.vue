@@ -74,9 +74,7 @@ const navItems = [
 </script>
 
 <style scoped>
-/* =========================
-   LOGO - PHẦN TRÊN SIDEBAR
-   ========================= */
+/* LOGO */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -108,9 +106,7 @@ const navItems = [
   display: none;
 }
 
-/* =========================
-   SIDEBAR CONTAINER
-   ========================= */
+/* SIDEBAR CONTAINER */
 .app-sidebar {
   width: 240px;
   height: 100vh;
@@ -143,9 +139,7 @@ const navItems = [
   width: 66px;
 }
 
-/* =========================
-   NAVIGATION MENU
-   ========================= */
+/* NAVIGATION MENU */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -168,9 +162,7 @@ const navItems = [
   background-color: transparent;
 }
 
-/* =========================
-   NAV ITEM
-   ========================= */
+/* NAV ITEM */
 .nav-item {
   display: flex;
   align-items: center;
@@ -240,9 +232,7 @@ const navItems = [
   opacity: 1;
 }
 
-/* =========================
-   FOOTER SIDEBAR
-   ========================= */
+/* FOOTER SIDEBAR */
 .footer-border {
   width: calc(100% + 24px);
   height: 1px;
@@ -273,7 +263,6 @@ const navItems = [
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Khi sidebar thu gọn, căn giữa nút collapse */
 .app-sidebar.collapsed .btn-collapse {
   margin: 0 auto;
   display: flex;
@@ -283,5 +272,59 @@ const navItems = [
 }
 .app-sidebar.collapsed .btn-collapse .nav-item-text {
   display: none;
+}
+
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    width: 66px;
+  }
+
+  .sidebar-logo .logo-text {
+    display: none;
+  }
+
+  .nav-item-text {
+    display: none;
+  }
+
+  .nav-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    margin-left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-item:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 992px) {
+  .app-sidebar {
+    width: 240px;
+  }
+
+  .sidebar-logo .logo-text {
+    display: block;
+  }
+
+  .nav-item-text {
+    display: inline;
+  }
+
+  .nav-item::after {
+    display: none;
+  }
 }
 </style>

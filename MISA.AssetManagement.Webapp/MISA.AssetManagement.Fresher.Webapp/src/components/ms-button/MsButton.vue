@@ -86,12 +86,3 @@ const variantClasses = {
 }
 // #endregion
 </script>
-
-<style scoped>
-/* CSS: MsButton */
-
-/* Icon trong nút bấm */
-.btn i {
-  font-size: 0.9em;
-}
-</style>

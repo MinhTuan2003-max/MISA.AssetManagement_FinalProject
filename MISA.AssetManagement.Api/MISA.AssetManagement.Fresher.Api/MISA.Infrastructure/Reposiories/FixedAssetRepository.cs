@@ -17,6 +17,57 @@ namespace MISA.Infrastructure.Reposiories
             : base(connectionString, "fixed_asset") { }
 
         /// <summary>
+        /// Generate mã tài sản ATOMIC (không trùng lặp khi concurrent)
+        /// CreatedBy: HMTuan (31/10/2025)
+        /// </summary>
+        /// <returns>Mã tài sản mới</returns>
+        public string GenerateNewCodeAtomic()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                try
+                {
+                    // Sử dụng transaction để đảm bảo atomic
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        // Lock bảng để prevent race condition
+                        var lockSql = "SELECT * FROM fixed_asset ORDER BY created_date DESC LIMIT 1 FOR UPDATE";
+                        var lastAsset = connection.QueryFirstOrDefault<dynamic>(lockSql, transaction: transaction);
+
+                        string newCode;
+                        if (lastAsset == null)
+                        {
+                            newCode = "TS000001";
+                        }
+                        else
+                        {
+                            var lastCode = (string)lastAsset.fixed_asset_code;
+                            var numberPart = lastCode.Substring(2);
+
+                            if (int.TryParse(numberPart, out int lastNumber))
+                            {
+                                newCode = $"TS{(lastNumber + 1):D6}";
+                            }
+                            else
+                            {
+                                newCode = "TS000001";
+                            }
+                        }
+
+                        transaction.Commit();
+                        return newCode;
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
         /// Kiểm tra mã tài sản đã tồn tại
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
@@ -61,6 +112,20 @@ namespace MISA.Infrastructure.Reposiories
                 var parameters = new DynamicParameters();
                 parameters.Add("@Code", code);
                 return connection.QueryFirstOrDefault<FixedAsset>(sql, parameters);
+            }
+        }
+
+        /// <summary>
+        /// ✅ Lấy danh sách tất cả mã tài sản (để client refresh)
+        /// CreatedBy: HMTuan (31/10/2025)
+        /// </summary>
+        /// <returns>Danh sách mã tài sản</returns>
+        public List<string> GetAllAssetCodes()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var sql = "SELECT fixed_asset_code FROM fixed_asset WHERE is_active = 1 ORDER BY created_date DESC";
+                return connection.Query<string>(sql).ToList();
             }
         }
 
@@ -141,54 +206,20 @@ namespace MISA.Infrastructure.Reposiories
             }
         }
 
-
         /// <summary>
-        /// Tạo mã tài sản tự động tăng
+        /// ✅ DEPRECATED - Dùng GenerateNewCodeAtomic thay vì cách cũ
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
         /// <returns>Mã tài sản mới</returns>
         public string GenerateNewCode()
         {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var sql = "SELECT fixed_asset_code FROM fixed_asset ORDER BY created_date DESC LIMIT 1";
-                var lastCode = connection.QueryFirstOrDefault<string>(sql);
-
-                if (string.IsNullOrEmpty(lastCode))
-                {
-                    return "TS00001";
-                }
-
-                // Lấy phần số từ mã (ví dụ: TS001 -> 001)
-                var numberPart = lastCode.Substring(2);
-                var nextNumber = int.Parse(numberPart) + 1;
-                return $"TS{nextNumber:D5}";
-            }
+            // Dùng GenerateNewCodeAtomic() thay thế
+            return GenerateNewCodeAtomic();
         }
 
         /// <summary>
-        /// Tính giá trị còn lại của tài sản (sử dụng stored procedure)
-        /// CreatedBy: HMTuan (28/10/2025)
-        /// </summary>
-        /// <param name="fixedAssetId">ID tài sản</param>
-        /// <returns>Giá trị còn lại</returns>
-        public decimal CalculateRemainingValue(Guid fixedAssetId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@p_fixed_asset_id", fixedAssetId.ToString());
-                parameters.Add("@p_remaining_value", dbType: System.Data.DbType.Decimal, direction: System.Data.ParameterDirection.Output);
-
-                connection.Execute("sp_calculate_remaining_value", parameters, commandType: System.Data.CommandType.StoredProcedure);
-
-                return parameters.Get<decimal>("@p_remaining_value");
-            }
-        }
-
-        /// <summary>
-        /// Thêm mới tài sản
-        /// CreatedBy: HMTuan (28/10/2025)
+        /// Thêm mới tài sản với mã generated từ server
+        /// CreatedBy: HMTuan (31/10/2025)
         /// </summary>
         /// <param name="entity">Entity cần thêm</param>
         /// <returns>Số dòng affected</returns>
@@ -196,48 +227,69 @@ namespace MISA.Infrastructure.Reposiories
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
-                var sql = new StringBuilder();
-                sql.Append("INSERT INTO fixed_asset (");
-                sql.Append("fixed_asset_id, fixed_asset_code, fixed_asset_name, ");
-                sql.Append("department_id, department_code, department_name, ");
-                sql.Append("fixed_asset_category_id, fixed_asset_category_code, fixed_asset_category_name, ");
-                sql.Append("purchase_date, production_year, tracked_year, ");
-                sql.Append("life_time, depreciation_rate, quantity, cost, depreciation_value, ");
-                sql.Append("description, is_active, created_date, created_by, modified_date, modified_by) ");
-                sql.Append("VALUES (");
-                sql.Append("@FixedAssetId, @FixedAssetCode, @FixedAssetName, ");
-                sql.Append("@DepartmentId, @DepartmentCode, @DepartmentName, ");
-                sql.Append("@CategoryId, @CategoryCode, @CategoryName, ");
-                sql.Append("@PurchaseDate, @ProductionYear, @TrackedYear, ");
-                sql.Append("@LifeTime, @DepreciationRate, @Quantity, @Cost, @DepreciationValue, ");
-                sql.Append("@Description, @IsActive, @CreatedDate, @CreatedBy, @ModifiedDate, @ModifiedBy)");
+                connection.Open();
 
-                var parameters = new DynamicParameters();
-                parameters.Add("@FixedAssetId", entity.fixed_asset_id.ToString());
-                parameters.Add("@FixedAssetCode", entity.fixed_asset_code);
-                parameters.Add("@FixedAssetName", entity.fixed_asset_name);
-                parameters.Add("@DepartmentId", entity.department_id.ToString());
-                parameters.Add("@DepartmentCode", entity.department_code);
-                parameters.Add("@DepartmentName", entity.department_name);
-                parameters.Add("@CategoryId", entity.fixed_asset_category_id.ToString());
-                parameters.Add("@CategoryCode", entity.fixed_asset_category_code);
-                parameters.Add("@CategoryName", entity.fixed_asset_category_name);
-                parameters.Add("@PurchaseDate", entity.purchase_date);
-                parameters.Add("@ProductionYear", entity.production_year);
-                parameters.Add("@TrackedYear", entity.tracked_year);
-                parameters.Add("@LifeTime", entity.life_time);
-                parameters.Add("@DepreciationRate", entity.depreciation_rate);
-                parameters.Add("@Quantity", entity.quantity);
-                parameters.Add("@Cost", entity.cost);
-                parameters.Add("@DepreciationValue", entity.depreciation_value);
-                parameters.Add("@Description", entity.description);
-                parameters.Add("@IsActive", true);
-                parameters.Add("@CreatedDate", entity.created_date);
-                parameters.Add("@CreatedBy", entity.created_by);
-                parameters.Add("@ModifiedDate", entity.modified_date);
-                parameters.Add("@ModifiedBy", entity.modified_by);
+                try
+                {
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        // Generate mã atomic nếu chưa có
+                        if (string.IsNullOrEmpty(entity.fixed_asset_code))
+                        {
+                            entity.fixed_asset_code = GenerateNewCodeAtomic();
+                        }
 
-                return connection.Execute(sql.ToString(), parameters);
+                        var sql = new StringBuilder();
+                        sql.Append("INSERT INTO fixed_asset (");
+                        sql.Append("fixed_asset_id, fixed_asset_code, fixed_asset_name, ");
+                        sql.Append("department_id, department_code, department_name, ");
+                        sql.Append("fixed_asset_category_id, fixed_asset_category_code, fixed_asset_category_name, ");
+                        sql.Append("purchase_date, production_year, tracked_year, ");
+                        sql.Append("life_time, depreciation_rate, quantity, cost, depreciation_value, ");
+                        sql.Append("description, is_active, created_date, created_by, modified_date, modified_by) ");
+                        sql.Append("VALUES (");
+                        sql.Append("@FixedAssetId, @FixedAssetCode, @FixedAssetName, ");
+                        sql.Append("@DepartmentId, @DepartmentCode, @DepartmentName, ");
+                        sql.Append("@CategoryId, @CategoryCode, @CategoryName, ");
+                        sql.Append("@PurchaseDate, @ProductionYear, @TrackedYear, ");
+                        sql.Append("@LifeTime, @DepreciationRate, @Quantity, @Cost, @DepreciationValue, ");
+                        sql.Append("@Description, @IsActive, @CreatedDate, @CreatedBy, @ModifiedDate, @ModifiedBy)");
+
+                        var parameters = new DynamicParameters();
+                        parameters.Add("@FixedAssetId", entity.fixed_asset_id.ToString());
+                        parameters.Add("@FixedAssetCode", entity.fixed_asset_code);
+                        parameters.Add("@FixedAssetName", entity.fixed_asset_name);
+                        parameters.Add("@DepartmentId", entity.department_id.ToString());
+                        parameters.Add("@DepartmentCode", entity.department_code);
+                        parameters.Add("@DepartmentName", entity.department_name);
+                        parameters.Add("@CategoryId", entity.fixed_asset_category_id.ToString());
+                        parameters.Add("@CategoryCode", entity.fixed_asset_category_code);
+                        parameters.Add("@CategoryName", entity.fixed_asset_category_name);
+                        parameters.Add("@PurchaseDate", entity.purchase_date);
+                        parameters.Add("@ProductionYear", entity.production_year);
+                        parameters.Add("@TrackedYear", entity.tracked_year);
+                        parameters.Add("@LifeTime", entity.life_time);
+                        parameters.Add("@DepreciationRate", entity.depreciation_rate);
+                        parameters.Add("@Quantity", entity.quantity);
+                        parameters.Add("@Cost", entity.cost);
+                        parameters.Add("@DepreciationValue", entity.depreciation_value);
+                        parameters.Add("@Description", entity.description);
+                        parameters.Add("@IsActive", true);
+                        parameters.Add("@CreatedDate", entity.created_date);
+                        parameters.Add("@CreatedBy", entity.created_by);
+                        parameters.Add("@ModifiedDate", entity.modified_date);
+                        parameters.Add("@ModifiedBy", entity.modified_by);
+
+                        var result = connection.Execute(sql.ToString(), parameters, transaction: transaction);
+
+                        transaction.Commit();
+                        return result;
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
 
@@ -300,6 +352,25 @@ namespace MISA.Infrastructure.Reposiories
                 return connection.Execute(sql.ToString(), parameters);
             }
         }
+
+        /// <summary>
+        /// Tính giá trị còn lại của tài sản (sử dụng stored procedure)
+        /// CreatedBy: HMTuan (28/10/2025)
+        /// </summary>
+        /// <param name="fixedAssetId">ID tài sản</param>
+        /// <returns>Giá trị còn lại</returns>
+        public decimal CalculateRemainingValue(Guid fixedAssetId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@p_fixed_asset_id", fixedAssetId.ToString());
+                parameters.Add("@p_remaining_value", dbType: System.Data.DbType.Decimal, direction: System.Data.ParameterDirection.Output);
+
+                connection.Execute("sp_calculate_remaining_value", parameters, commandType: System.Data.CommandType.StoredProcedure);
+
+                return parameters.Get<decimal>("@p_remaining_value");
+            }
+        }
     }
 }
-
