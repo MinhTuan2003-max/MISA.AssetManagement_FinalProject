@@ -39,13 +39,5 @@ namespace MISA.Core.Interfaces.Repository
         /// </summary>
         /// <returns>Mã tài sản mới</returns>
         string GenerateNewCode();
-
-        /// <summary>
-        /// Tính giá trị còn lại của tài sản (sử dụng stored procedure)
-        /// CreatedBy: HMTuan (28/10/2025)
-        /// </summary>
-        /// <param name="fixedAssetId">ID tài sản</param>
-        /// <returns>Giá trị còn lại</returns>
-        decimal CalculateRemainingValue(Guid fixedAssetId);
     }
 }

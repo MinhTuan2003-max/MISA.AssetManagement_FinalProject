@@ -189,9 +189,12 @@ namespace MISA.Infrastructure.Reposiories
                 var totalRecords = connection.ExecuteScalar<int>(countSql, parameters);
 
                 // Phân trang
-                var offset = (filter.PageNumber - 1) * filter.PageSize;
                 sql.Append("ORDER BY fa.created_date DESC ");
-                sql.Append($"LIMIT {filter.PageSize} OFFSET {offset}");
+                sql.Append("LIMIT @PageSize OFFSET @Offset");
+
+                var offset = (filter.PageNumber - 1) * filter.PageSize;
+                parameters.Add("@PageSize", filter.PageSize);
+                parameters.Add("@Offset", offset);
 
                 var data = connection.Query<FixedAssetDto>(sql.ToString(), parameters).ToList();
 
