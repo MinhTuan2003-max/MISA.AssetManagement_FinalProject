@@ -9,89 +9,103 @@ using MISA.Infrastructure.Reposiories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Cấu hình route
-builder.Services.AddControllers(options =>
-{
-    options.Conventions.Add(new RouteTokenTransformerConvention(new LowercaseControllerTransformer()));
-});
-
-// Cấu hình Dapper - Tự động map snake_case sang camelCase
-Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-// Add services to the container
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "MISA Fixed Asset Management API",
-        Version = "v1",
-        Description = "API quản lý tài sản cố định"
-    });
-});
-
-
-// Đăng ký Connection String
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=localhost;Port=3306;Database=misa_fixed_asset_management_development;User Id=root;Password=123456;";
-
-// Đăng ký Repositories
-builder.Services.AddScoped<IDepartmentRepository>(provider =>
-    new DepartmentRepository(connectionString));
-
-builder.Services.AddScoped<IFixedAssetCategoryRepository>(provider =>
-    new FixedAssetCategoryRepository(connectionString));
-
-builder.Services.AddScoped<IFixedAssetRepository>(provider =>
-    new FixedAssetRepository(connectionString));
-
-// Đăng ký Services
-builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
-builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
-builder.Services.AddScoped<IBaseService<Department>, DepartmentService>();
-builder.Services.AddScoped<IBaseService<FixedAssetCategory>, FixedAssetCategoryService>();
-
-
-// Thêm CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+// Configure Services
+ConfigureServices(builder);
 
 var app = builder.Build();
 
-// Middleware xử lý exception toàn cục
-app.UseMiddleware<ExceptionMiddleware>();
+// Configure Middleware
+ConfigureMiddleware(app);
 
-// Swagger
-if (app.Environment.IsDevelopment())
+app.Run();
+
+/// <summary>
+/// Cấu hình toàn bộ DI (Dependency Injection) cho ứng dụng.
+/// CreatedBy: HMTuan (03/11/2025)
+/// </summary>
+/// <param name="builder">WebApplicationBuilder</param>
+void ConfigureServices(WebApplicationBuilder builder)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    // Cấu hình Controllers và Route
+    builder.Services.AddControllers(options =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MISA Fixed Asset API V1");
+        // Convention để route controller tự động lowercase
+        options.Conventions.Add(
+            new RouteTokenTransformerConvention(new LowercaseControllerTransformer())
+        );
+    });
+
+    // Cấu hình Swagger
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = "MISA Fixed Asset Management API",
+            Version = "v1",
+            Description = "API quản lý tài sản cố định"
+        });
+    });
+
+    // Cấu hình Dapper - Cho phép tự động map snake_case sang PascalCase
+    Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+    // Connection String
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Host=localhost;Port=3306;Database=misa_fixed_asset_management_development;User Id=root;Password=123456;";
+
+    // Đăng ký Repository (Data Access Layer)
+    builder.Services.AddScoped<IDepartmentRepository>(
+        provider => new DepartmentRepository(connectionString)
+    );
+
+    builder.Services.AddScoped<IFixedAssetCategoryRepository>(
+        provider => new FixedAssetCategoryRepository(connectionString)
+    );
+
+    builder.Services.AddScoped<IFixedAssetRepository>(
+        provider => new FixedAssetRepository(connectionString)
+    );
+
+    // Đăng ký Service (Business Layer)
+    builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
+    builder.Services.AddScoped<IBaseService<Department>, DepartmentService>();
+    builder.Services.AddScoped<IBaseService<FixedAssetCategory>, FixedAssetCategoryService>();
+
+    // Cấu hình CORS
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
     });
 }
 
-app.UseHttpsRedirection();
+/// <summary>
+/// Cấu hình pipeline middleware cho ứng dụng.
+/// CreatedBy: HMTuan (03/11/2025)
+/// </summary>
+/// <param name="app">WebApplication</param>
+void ConfigureMiddleware(WebApplication app)
+{
+    // Middleware xử lý exception toàn cục
+    app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCors("AllowAll");
+    // Swagger
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "MISA Fixed Asset API V1");
+        });
+    }
 
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+    app.UseHttpsRedirection();
+    app.UseCors("AllowAll");
+    app.UseAuthorization();
+    app.MapControllers();
+}
