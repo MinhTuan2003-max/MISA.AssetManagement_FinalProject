@@ -47,6 +47,42 @@ namespace MISA.Core.Services
         }
 
         /// <summary>
+        /// Lấy dữ liệu để nhân bản (có mã mới) - dùng để hiển thị forÌ
+        /// CreatedBy: HMTuan (02/11/2025)
+        /// </summary>
+        /// <param name="id">ID tài sản gốc</param>
+        /// <returns>DTO để hiển thị form tạo mới</returns>
+        public FixedAssetCreateDto GetDuplicateData(Guid id)
+        {
+            var original = GetById(id);
+
+            // Tạo mã mới tự động
+            var newCode = _fixedAssetRepository.GenerateNewCode();
+
+            // Trả về DTO với dữ liệu copy từ bản gốc
+            return new FixedAssetCreateDto
+            {
+                FixedAssetCode = newCode,
+                FixedAssetName = original.FixedAssetName + " (Copy)",
+
+                DepartmentCode = original.DepartmentCode,
+                FixedAssetCategoryCode = original.FixedAssetCategoryCode,
+
+                // Ngày mua = ngày hiện tại
+                PurchaseDate = DateTime.Now,
+
+                LifeTime = original.LifeTime,
+                DepreciationRate = original.DepreciationRate,
+
+                Quantity = original.Quantity,
+                Cost = original.Cost,
+                DepreciationValue = original.DepreciationValue,
+
+                Description = original.Description
+            };
+        }
+
+        /// <summary>
         /// Tạo mới tài sản từ DTO
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
@@ -166,54 +202,6 @@ namespace MISA.Core.Services
             existing.ModifiedDate = DateTime.Now;
 
             return Update(id, existing);
-        }
-
-        /// <summary>
-        /// Nhân bản tài sản (copy và tự động tạo mã mới)
-        /// CreatedBy: HMTuan (28/10/2025)
-        /// </summary>
-        /// <param name="id">ID tài sản gốc</param>
-        /// <returns>Số dòng affected</returns>
-        public int Duplicate(Guid id)
-        {
-            var original = GetById(id);
-
-            // Tạo mã mới tự động
-            var newCode = _fixedAssetRepository.GenerateNewCode();
-
-            // Copy entity với mã mới
-            var duplicated = new FixedAsset
-            {
-                FixedAssetId = Guid.NewGuid(),
-                FixedAssetCode = newCode,
-                FixedAssetName = original.FixedAssetName + " (Copy)",
-
-                DepartmentId = original.DepartmentId,
-                DepartmentCode = original.DepartmentCode,
-                DepartmentName = original.DepartmentName,
-
-                FixedAssetCategoryId = original.FixedAssetCategoryId,
-                FixedAssetCategoryCode = original.FixedAssetCategoryCode,
-                FixedAssetCategoryName = original.FixedAssetCategoryName,
-
-                PurchaseDate = DateTime.Now,
-                ProductionYear = DateTime.Now.Year,
-                TrackedYear = DateTime.Now.Year,
-
-                LifeTime = original.LifeTime,
-                DepreciationRate = original.DepreciationRate,
-
-                Quantity = original.Quantity,
-                Cost = original.Cost,
-                DepreciationValue = original.DepreciationValue,
-
-                Description = original.Description,
-                IsActive = true,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
-            };
-
-            return Create(duplicated);
         }
 
         /// <summary>
@@ -403,11 +391,6 @@ namespace MISA.Core.Services
             if (dto.DepreciationValue > dto.Cost)
             {
                 errors.Add("Hao mòn năm phải nhỏ hơn hoặc bằng nguyên giá");
-            }
-
-            if (errors.Any())
-            {
-                throw new ValidateException(string.Join("; ", errors));
             }
 
             if (errors.Any())

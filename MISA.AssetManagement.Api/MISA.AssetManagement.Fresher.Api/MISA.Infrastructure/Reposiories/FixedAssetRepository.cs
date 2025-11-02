@@ -18,7 +18,7 @@ namespace MISA.Infrastructure.Reposiories
 
         /// <summary>
         /// Generate mã tài sản ATOMIC (không trùng lặp khi concurrent)
-        /// CreatedBy: HMTuan (31/10/2025)
+        /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
         /// <returns>Mã tài sản mới</returns>
         public string GenerateNewCodeAtomic()
@@ -116,8 +116,8 @@ namespace MISA.Infrastructure.Reposiories
         }
 
         /// <summary>
-        /// ✅ Lấy danh sách tất cả mã tài sản (để client refresh)
-        /// CreatedBy: HMTuan (31/10/2025)
+        /// Lấy danh sách tất cả mã tài sản
+        /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
         /// <returns>Danh sách mã tài sản</returns>
         public List<string> GetAllAssetCodes()
@@ -210,13 +210,13 @@ namespace MISA.Infrastructure.Reposiories
         }
 
         /// <summary>
-        /// ✅ DEPRECATED - Dùng GenerateNewCodeAtomic thay vì cách cũ
+        /// Tạo mã tài sản dùng GenerateNewCodeAtomic
         /// CreatedBy: HMTuan (28/10/2025)
         /// </summary>
         /// <returns>Mã tài sản mới</returns>
         public string GenerateNewCode()
         {
-            // Dùng GenerateNewCodeAtomic() thay thế
+            // Dùng GenerateNewCodeAtomic()
             return GenerateNewCodeAtomic();
         }
 

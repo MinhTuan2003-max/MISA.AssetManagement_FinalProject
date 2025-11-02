@@ -93,15 +93,11 @@ namespace MISA.AssetManagement.Fresher.Controllers
         /// </summary>
         /// <param name="id">ID tài sản gốc</param>
         /// <returns>201 Created</returns>
-        [HttpPost("{id}/duplicate")]
-        public IActionResult Duplicate(Guid id)
+        [HttpGet("{id}/duplicate-data")]
+        public IActionResult GetDuplicateData(Guid id)
         {
-            var result = _fixedAssetService.Duplicate(id);
-            return StatusCode(201, new
-            {
-                DevMsg = "Nhân bản tài sản thành công",
-                UserMsg = "Nhân bản tài sản thành công"
-            });
+            var dto = _fixedAssetService.GetDuplicateData(id);
+            return Ok(dto);
         }
     }
 }

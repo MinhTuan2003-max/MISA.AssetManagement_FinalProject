@@ -34,11 +34,11 @@ namespace MISA.Core.Interfaces.Service
         int UpdateFromDto(Guid id, FixedAssetUpdateDto dto);
 
         /// <summary>
-        /// Nhân bản tài sản (copy và tự động tạo mã mới)
-        /// CreatedBy: HMTuan (28/10/2025)
+        /// Lấy dữ liệu để nhân bản (có mã mới) - dùng để hiển thị form
+        /// CreatedBy: HMTuan (02/11/2025)
         /// </summary>
         /// <param name="id">ID tài sản gốc</param>
-        /// <returns>Số dòng affected</returns>
-        int Duplicate(Guid id);
+        /// <returns>DTO để hiển thị form tạo mới</returns>
+        FixedAssetCreateDto GetDuplicateData(Guid id);
     }
 }
