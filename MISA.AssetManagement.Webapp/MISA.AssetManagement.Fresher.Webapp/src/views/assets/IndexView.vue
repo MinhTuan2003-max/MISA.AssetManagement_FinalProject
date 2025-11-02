@@ -36,7 +36,7 @@
           :disabled="exporting || filteredAssets.length === 0"
         >
           <i class="icon excel-icon"></i>
-          <span v-if="exporting" style="margin-left: 4px; font-size: 10px;">...</span>
+          <span v-if="exporting">...</span>
         </MsButton>
         <MsButton
           class="btn-icon toolbar-button"
@@ -106,12 +106,12 @@
       :initial-data="editingAssetData"
       :category-options="categoryOptions"
       :department-options="departmentOptions"
-      :existing-asset-codes="tableData.map(a => a.AssetCode || a.FixedAssetCode)"
+      :existing-asset-codes="tableData.map(a => a.FixedAssetCode || a.AssetCode)"
       @close="handleCloseForm"
       @submit="handleSubmitAsset"
     />
 
-    <!-- Dialog 1: Xóa tài sản -->
+    <!-- Dialog: Xóa tài sản -->
     <BaseDialog
       v-if="showDeleteDialog"
       :icon-class="'warning-icon'"
@@ -120,7 +120,7 @@
       @close="handleCancelDelete"
     />
 
-    <!-- Dialog 2: Hủy khai báo tài sản -->
+    <!-- Dialog: Hủy khai báo tài sản -->
     <BaseDialog
       v-if="showCancelDeclarationDialog"
       icon-class="warning-icon"
@@ -132,7 +132,7 @@
       @close="showCancelDeclarationDialog = false"
     />
 
-    <!-- Dialog 3: Lưu thay đổi trước khi tắt -->
+    <!-- Dialog: Lưu thay đổi trước khi tắt -->
     <BaseDialog
       v-if="showSaveChangesDialog"
       icon-class="warning-icon"
@@ -143,26 +143,6 @@
         { label: 'Lưu', type: 'primary', action: handleSaveChangesYes }
       ]"
       @close="showSaveChangesDialog = false"
-    />
-
-    <!-- Dialog 4: Duplicate tài sản -->
-    <BaseDialog
-      v-if="showDuplicateDialog"
-      :description="dialogMessage"
-      icon-class="warning-icon"
-      :buttons="[
-        {
-          label: 'Hủy',
-          type: 'cancel',
-          action: () => (showDuplicateDialog = false)
-        },
-        {
-          label: 'Nhân bản',
-          type: 'primary',
-          action: confirmDuplicate
-        }
-      ]"
-      @close="showDuplicateDialog = false"
     />
 
     <!-- Toast Notifications Container -->
@@ -187,6 +167,12 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useFixedAssets } from '@/composables/useFixedAssets'
+import { useAssetHandlers } from './handlers/assetHandlers.js'
+import { useToastManager } from './handlers/toastManager'
+import { useExcelExport } from '@/composables/useExcelExport.js'
+import { debounce } from '@/utils/component/debounce.js'
+
+// Components
 import BaseLayout from '@/layout/BaseLayout.vue'
 import MsSearchBar from '@/components/ms-search/MsSearchBar.vue'
 import MsButton from '@/components/ms-button/MsButton.vue'
@@ -195,11 +181,9 @@ import MsFilterButton from '@/components/ms-filter/MsFilterButton.vue'
 import BaseDialog from '@/components/ms-dialog/MsDialog.vue'
 import TheAssetForm from '@/views/assets/TheAssetForm.vue'
 import MsToastNotification from '@/components/ms-toast/MsToast.vue'
-import { useExcelExport } from '@/composables/useExcelExport.js'
-import { FixedAsset } from '@/domains/models/FixedAsset'
-import { debounce } from '@/utils/component/debounce.js'
 
 //#region Composables
+const fixedAssetsComposable = useFixedAssets()
 const {
   loading,
   error,
@@ -221,81 +205,52 @@ const {
   filteredAssets,
   loadFixedAssets,
   loadFilterOptions,
-  loadShortNameSelectOptions,
-  createFixedAsset,
-  updateFixedAsset,
-  deleteFixedAsset,
-  duplicateFixedAsset,
-  deleteSelectedAssets,
   handleSelectAll,
   handleSelectItem,
   handlePageChange,
   handlePageSizeChange,
   handleSearch
-} = useFixedAssets()
+} = fixedAssetsComposable
 
 const { exporting, exportFixedAssets } = useExcelExport()
+
+// Toast Manager
+const toastManager = useToastManager()
+const { toasts, removeToast, toastSuccess, toastError } = toastManager
+
+// Asset Handlers
+const handlers = useAssetHandlers(fixedAssetsComposable, toastManager)
+const {
+  isPopupOpen,
+  popupMode,
+  selectedAssetId,
+  editingAssetData,
+  showDeleteDialog,
+  deleteDialogData,
+  showCancelDeclarationDialog,
+  showSaveChangesDialog,
+  handleAddAsset,
+  handleEdit,
+  handleDuplicate,
+  handleSubmitAsset,
+  handleCloseForm,
+  handleDelete,
+  handleDeleteSelected,
+  handleDeleteMultiple,
+  confirmDelete,
+  handleCancelDelete,
+  handleCancelDeclarationNo,
+  handleCancelDeclarationYes,
+  handleSaveChangesCancel,
+  handleSaveChangesNo,
+  handleSaveChangesYes
+} = handlers
 //#endregion
 
 //#region Local State
-// Form Popup State
-const isPopupOpen = ref(false)
-const popupMode = ref('add')
-const selectedAssetId = ref(null)
-const editingAssetData = ref(null)
-const formDataBeforeEdit = ref(null)
-
-// Delete Dialog State
-const showDeleteDialog = ref(false)
-const deleteDialogData = ref({ type: 'single', asset: null })
-
-// Cancel Declaration Dialog State
-const showCancelDeclarationDialog = ref(false)
-
-// Save Changes Dialog State
-const showSaveChangesDialog = ref(false)
-const pendingSubmitData = ref(null)
-const showDuplicateDialog = ref(false)
-const dialogMessage = ref('')
-let assetToDuplicate = null
-
-// Filter/Search Animation State
 const isFiltering = ref(false)
 const showTable = ref(true)
 const tableKey = ref(0)
-
-// Toast State
-const toasts = ref([])
-let filterTimeout = null
-//#endregion
-
-//#region Toast Management
-function showToast({ type = 'success', title, message, showUndo = false, onUndo, duration = 3000 }) {
-  const id = Date.now() + Math.random()
-  toasts.value.push({ id, type, title, message, showUndo, duration, onUndo })
-  return id
-}
-
-function removeToast(id) {
-  const index = toasts.value.findIndex(t => t.id === id)
-  if (index > -1) toasts.value.splice(index, 1)
-}
-
-function toastSuccess(message) {
-  return showToast({ type: 'success', message, duration: 3000 })
-}
-
-function toastUpdate(message) {
-  return showToast({ type: 'update', message, duration: 3000 })
-}
-
-function toastDelete(message) {
-  return showToast({ type: 'delete', message, duration: 5000 })
-}
-
-function toastError(message) {
-  return showToast({ type: 'error', message, duration: 4000 })
-}
 //#endregion
 
 //#region Lifecycle
@@ -308,7 +263,6 @@ const debouncedSearch = debounce(async (query) => {
 }, 1000)
 
 watch(searchQuery, async () => {
-  if (filterTimeout) clearTimeout(filterTimeout)
   showTable.value = false
   isFiltering.value = true
   await debouncedSearch(searchQuery.value)
@@ -319,17 +273,9 @@ watch(searchQuery, async () => {
 })
 
 watch([filterCategory, filterDepartment], async () => {
-  console.log('Filter changed:', {
-    category: filterCategory.value,
-    department: filterDepartment.value
-  })
-
-  // Hiển thị animation
   showTable.value = false
   isFiltering.value = true
 
-  // Đợi composable load xong
-  // (composable đã có watch riêng để gọi loadFixedAssets)
   await new Promise(resolve => {
     const checkLoading = setInterval(() => {
       if (!loading.value) {
@@ -377,277 +323,9 @@ const deleteDialogButtons = computed(() => [
 ])
 //#endregion
 
-//#region CRUD Actions - Add
-async function handleAddAsset() {
-  popupMode.value = 'add'
-  selectedAssetId.value = null
-  editingAssetData.value = null
-  formDataBeforeEdit.value = null
-  await loadShortNameSelectOptions()
-  isPopupOpen.value = true
-}
-//#endregion
-
-//#region CRUD Actions - Edit
-async function handleEdit(item) {
-  try {
-    const assetId = item.FixedAssetId || item.CandidateID || item.id
-    if (!assetId) {
-      toastError('Không thể xác định ID tài sản')
-      return
-    }
-
-    popupMode.value = 'edit'
-    selectedAssetId.value = assetId
-    const asset = FixedAsset.fromApi(item)
-    const editFormat = asset.toEditFormat()
-
-    editingAssetData.value = editFormat
-    formDataBeforeEdit.value = JSON.parse(JSON.stringify(editFormat))
-
-    await loadShortNameSelectOptions()
-    isPopupOpen.value = true
-  } catch (err) {
-    toastError(`Lỗi khi load tài sản: ${err.message}`)
-  }
-}
-//#endregion
-
-//#region CRUD Actions - Submit
-/**
- * Submit asset từ form
- */
-async function handleSubmitAsset(assetData) {
-  try {
-    if (popupMode.value === 'add') {
-      await createFixedAsset(assetData)
-      toastSuccess('Thêm tài sản thành công!')
-    } else {
-      await updateFixedAsset(selectedAssetId.value, assetData)
-      toastUpdate('Cập nhật tài sản thành công!')
-    }
-
-    await loadFixedAssets()
-    closePopup()
-  } catch (err) {
-    if (err.response?.data?.errors) {
-      toastError(`Lỗi validation: ${JSON.stringify(err.response.data.errors, null, 2)}`)
-    } else {
-      toastError(`Lỗi: ${err.message}`)
-    }
-  }
-}
-
-/**
- * Kiểm tra thay đổi form
- */
-function hasFormChanged(currentData) {
-  if (!formDataBeforeEdit.value) return false
-  const before = JSON.stringify(formDataBeforeEdit.value)
-  const current = JSON.stringify(currentData)
-  return before !== current
-}
-
-/**
- * Đóng form - kiểm tra thay đổi
- */
-function handleCloseForm(currentFormData) {
-  // Add mode - hỏi hủy khai báo
-  if (popupMode.value === 'add') {
-    showCancelDeclarationDialog.value = true
-    return
-  }
-
-  // Edit mode - kiểm tra thay đổi
-  if (hasFormChanged(currentFormData)) {
-    pendingSubmitData.value = currentFormData
-    showSaveChangesDialog.value = true
-  } else {
-    closePopup()
-  }
-}
-
-/**
- * Đóng popup + tất cả dialogs
- */
-function closePopup() {
-  isPopupOpen.value = false
-  showSaveChangesDialog.value = false
-  showCancelDeclarationDialog.value = false
-  showDeleteDialog.value = false
-  editingAssetData.value = null
-  formDataBeforeEdit.value = null
-  pendingSubmitData.value = null
-}
-//#endregion
-
-//#region Dialog Handlers
-
-// Dialog 2: Hủy khai báo
-function handleCancelDeclarationNo() {
-  showCancelDeclarationDialog.value = false
-}
-
-function handleCancelDeclarationYes() {
-  showCancelDeclarationDialog.value = false
-  closePopup()
-}
-
-/**
- * Dialog 3: Lưu thay đổi - Bấm "Hủy bỏ" (tắt dialog, giữ form)
- */
-function handleSaveChangesCancel() {
-  showSaveChangesDialog.value = false
-  pendingSubmitData.value = null
-  // Chỉ tắt dialog 3, giữ lại form edit
-}
-
-/**
- * Dialog 3: Lưu thay đổi - Bấm "Không lưu" (tắt form + dialog)
- */
-function handleSaveChangesNo() {
-  showSaveChangesDialog.value = false
-  closePopup() // Đóng form + dialog
-}
-
-/**
- * Dialog 3: Lưu thay đổi - Bấm "Lưu" (lưu API + tắt form + dialog)
- */
-async function handleSaveChangesYes() {
-  showSaveChangesDialog.value = false
-
-  if (pendingSubmitData.value) {
-    await handleSubmitAsset(pendingSubmitData.value)
-  } else {
-    toastError('Không có dữ liệu để lưu')
-  }
-}
-//#endregion
-
-//#region Delete Actions
-function handleDelete(item) {
-  if (!item) {
-    toastError('Không thể xác định tài sản cần xóa')
-    return
-  }
-  deleteDialogData.value = { type: 'single', asset: item }
-  showDeleteDialog.value = true
-}
-
-function handleDeleteSelected() {
-  if (selectedIds.value.length === 0) {
-    toastError('Vui lòng chọn ít nhất một tài sản để xóa')
-    return
-  }
-
-  if (selectedIds.value.length === 1) {
-    const asset = tableData.value.find(a => {
-      const id = a.CandidateID || a.FixedAssetId || a.id
-      return id === selectedIds.value[0]
-    })
-    if (!asset) {
-      toastError('Không tìm thấy tài sản')
-      return
-    }
-    deleteDialogData.value = { type: 'single', asset }
-  } else {
-    deleteDialogData.value = { type: 'multiple', asset: null }
-  }
-
-  showDeleteDialog.value = true
-}
-
-function handleDeleteMultiple(items) {
-  if (!items || items.length === 0) {
-    toastError('Không có tài sản nào được chọn')
-    return
-  }
-
-  if (items.length === 1) {
-    deleteDialogData.value = { type: 'single', asset: items[0] }
-  } else {
-    deleteDialogData.value = { type: 'multiple', asset: null }
-  }
-
-  showDeleteDialog.value = true
-}
-
-async function confirmDelete() {
-  try {
-    if (deleteDialogData.value.type === 'single') {
-      const asset = deleteDialogData.value.asset
-      if (!asset) {
-        toastError('Không có tài sản để xóa')
-        return
-      }
-
-      const assetId = asset.CandidateID || asset.FixedAssetId || asset.id
-      if (!assetId) {
-        toastError('Không thể xác định ID tài sản')
-        return
-      }
-
-      await deleteFixedAsset(assetId)
-      const code = asset.AssetCode || asset.FixedAssetCode || 'N/A'
-      const name = asset.AssetName || asset.FixedAssetName || 'N/A'
-      toastDelete(`Tài sản ${code} - ${name} đã bị xóa.`)
-    } else {
-      await deleteSelectedAssets()
-      toastDelete(`Các tài sản đã bị xóa.`)
-    }
-
-    showDeleteDialog.value = false
-    await loadFixedAssets()
-  } catch (err) {
-    toastError(`Lỗi: ${err.message}`)
-  }
-}
-
-function handleCancelDelete() {
-  showDeleteDialog.value = false
-  deleteDialogData.value = { type: 'single', asset: null }
-}
-//#endregion
-
 //#region Other Actions
 function handleRowClick(item) {
   console.log('Row clicked:', item)
-}
-
-/**
- * Hàm được gọi khi người dùng chọn "Nhân bản" từ context menu
- */
-function handleDuplicate(item) {
-  if (!item) {
-    toastError('Không thể xác định tài sản cần nhân bản')
-    return
-  }
-
-  const assetId = item.CandidateID || item.FixedAssetId || item.id
-  if (!assetId) {
-    toastError('Không thể xác định ID tài sản')
-    return
-  }
-
-  assetToDuplicate = item
-  dialogMessage.value = `Bạn có muốn nhân bản tài sản <strong>${item.AssetName || item.FixedAssetName}</strong> không?`
-  showDuplicateDialog.value = true
-}
-
-/**
- * Hàm thực hiện khi người dùng xác nhận trong dialog
- */
-async function confirmDuplicate() {
-  showDuplicateDialog.value = false
-  const assetId = assetToDuplicate.CandidateID || assetToDuplicate.FixedAssetId || assetToDuplicate.id
-  await duplicateFixedAsset(assetId)
-
-  try {
-    toastSuccess('Nhân bản tài sản thành công!')
-    await loadFixedAssets() // reload danh sách
-  } catch (err) {
-    toastError(`Lỗi khi nhân bản tài sản: ${err.message}`)
-  }
 }
 
 async function handleExportExcel() {

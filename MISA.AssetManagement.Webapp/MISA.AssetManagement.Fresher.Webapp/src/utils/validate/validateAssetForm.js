@@ -1,11 +1,12 @@
 /**
  * Validate Fixed Asset form data
  * Chấp nhận cả PascalCase (frontend) và snake_case (fallback)
+ * UpdatedBy: HMTuan (02/11/2025) - Add existingAssetCodes parameter
  * @param {Object} formData - Form data sử dụng để validate
+ * @param {Array} existingAssetCodes - Danh sách mã tài sản đã tồn tại
  * @returns {Object} - { errors: {}, isValid: boolean }
- * UpdatedBy: HMTuan (01/11/2025)
  */
-export function validateAssetForm(formData) {
+export function validateAssetForm(formData, existingAssetCodes = []) {
   const errors = {}
 
   // Helper function: Lấy giá trị từ cả hai format
@@ -16,6 +17,22 @@ export function validateAssetForm(formData) {
   // Helper function: Lấy key lỗi
   const getErrorKey = (pascalKey, snakeKey) => {
     return formData[pascalKey] !== undefined ? pascalKey : snakeKey
+  }
+
+  // Mã tài sản không được để trống + không được trùng
+  const fixedAssetCode = getValue('FixedAssetCode', 'fixed_asset_code')
+  const fixedAssetCodeKey = getErrorKey('FixedAssetCode', 'fixed_asset_code')
+
+  if (!fixedAssetCode?.toString().trim()) {
+    errors[fixedAssetCodeKey] = 'Mã tài sản không được để trống'
+  } else if (existingAssetCodes && existingAssetCodes.length > 0) {
+    // Check mã trùng (case-insensitive)
+    const codeExists = existingAssetCodes.some(code =>
+      code.trim().toUpperCase() === fixedAssetCode.toString().trim().toUpperCase()
+    )
+    if (codeExists) {
+      errors[fixedAssetCodeKey] = `Mã tài sản '${fixedAssetCode}' đã tồn tại trong hệ thống`
+    }
   }
 
   // Tên tài sản

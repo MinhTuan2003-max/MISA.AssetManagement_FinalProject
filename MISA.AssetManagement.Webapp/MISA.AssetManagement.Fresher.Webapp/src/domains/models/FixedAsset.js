@@ -40,7 +40,7 @@ export class FixedAsset {
 
     // #region Thông tin thời gian
     this.PurchaseDate = data.PurchaseDate || data.purchaseDate || ''
-    this.StartUsingDate = data.StartUsingDate || data.startUsingDate || ''
+    this.StartUsingDate = data.PurchaseDate || data.purchaseDate || ''
     this.ProductionYear = data.ProductionYear || data.productionYear || 0
     this.TrackedYear = data.TrackedYear || data.trackedYear || 0
     // #endregion

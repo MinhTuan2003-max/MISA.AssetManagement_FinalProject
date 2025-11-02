@@ -181,6 +181,10 @@ onUnmounted(() => {
   transition: transform 0.2s ease;
 }
 
+.filter-icon {
+  height: 15px;
+}
+
 .base-filter-btn:hover {
   outline: none;
   border-color: #2563eb;

@@ -5,7 +5,7 @@ import { FixedAsset } from '@/domains/models/FixedAsset.js'
  * API Service cho Tài sản cố định (FixedAsset)
  * Cung cấp các phương thức CRUD và filter cho tài sản
  * CreatedBy: HMTuan (29/10/2025)
- * UpdatedBy: HMTuan (01/11/2025) - Convert to PascalCase + Error Handling
+ * UpdatedBy: HMTuan (02/11/2025) - Refactor duplicate to getDuplicateData
  */
 class FixedAssetApi extends BaseApi {
   constructor() {
@@ -125,14 +125,15 @@ class FixedAssetApi extends BaseApi {
   }
 
   /**
-   * Nhân bản một tài sản
+   * Lấy dữ liệu để nhân bản tài sản (có mã mới tự động)
+   * Dùng để hiển thị form, user có thể chỉnh sửa trước khi submit
    * @param {string} id - UUID của tài sản cần nhân bản
-   * @returns {Promise<FixedAsset>} tài sản mới nhân bản
-   * CreatedBy: HMTuan (29/10/2025)
+   * @returns {Promise<Object>} DTO tạo mới (FixedAssetCreateDto) với dữ liệu đã copy
+   * CreatedBy: HMTuan (02/11/2025)
    */
-  async duplicateFixedAsset(id) {
-    const response = await this.axiosInstance.post(`/${this.resource}/${id}/duplicate`);
-    return FixedAsset.fromApi(response.data);
+  async getDuplicateData(id) {
+    const response = await this.axiosInstance.get(`/${this.resource}/${id}/duplicate-data`);
+    return response.data;
   }
 }
 
