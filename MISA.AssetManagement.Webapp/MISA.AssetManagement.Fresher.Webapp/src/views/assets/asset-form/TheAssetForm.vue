@@ -162,7 +162,7 @@ import MsInput from '@/components/ms-input/MsInput.vue'
 import MsSelect from '@/components/ms-select/MsSelect.vue'
 import MsDatePicker from '@/components/ms-date/MsDateInput.vue'
 import MsNumberInput from '@/components/ms-number-input/MsNumberInput.vue'
-import { useAssetFormLogic } from './handlers/assetFormLogic'
+import { useAssetFormLogic } from './theAssetForm.js'
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },

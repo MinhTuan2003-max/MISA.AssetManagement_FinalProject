@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { FixedAsset } from '@/domains/models/FixedAsset'
+import { FixedAsset } from '@/domains/models/FixedAsset.js'
 
 /**
  * Tạo handlers cho các thao tác CRUD và UI của tài sản

@@ -166,9 +166,9 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { useFixedAssets } from '@/composables/useFixedAssets'
-import { useAssetHandlers } from './handlers/assetHandlers.js'
-import { useToastManager } from './handlers/toastManager'
+import { useFixedAssets } from '@/composables/useFixedAssets.js'
+import { useAssetHandlers } from './indexView.js'
+import { useToastManager } from '@/utils/component/toastManager.js'
 import { useExcelExport } from '@/composables/useExcelExport.js'
 import { debounce } from '@/utils/component/debounce.js'
 
@@ -176,10 +176,10 @@ import { debounce } from '@/utils/component/debounce.js'
 import BaseLayout from '@/layout/BaseLayout.vue'
 import MsSearchBar from '@/components/ms-search/MsSearchBar.vue'
 import MsButton from '@/components/ms-button/MsButton.vue'
-import TheAssetTable from '@/views/assets/TheAssetTable.vue'
+import TheAssetTable from '@/views/assets/asset-table/TheAssetTable.vue'
 import MsFilterButton from '@/components/ms-filter/MsFilterButton.vue'
 import BaseDialog from '@/components/ms-dialog/MsDialog.vue'
-import TheAssetForm from '@/views/assets/TheAssetForm.vue'
+import TheAssetForm from '@/views/assets/asset-form/TheAssetForm.vue'
 import MsToastNotification from '@/components/ms-toast/MsToast.vue'
 
 //#region Composables

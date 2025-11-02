@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import IndexView from '@/views/assets/IndexView.vue'
+import IndexView from '@/views/assets/asset-index/IndexView.vue'
 import NotFound from '@/views/not-found/NotFound.vue'
 
 const routes = [

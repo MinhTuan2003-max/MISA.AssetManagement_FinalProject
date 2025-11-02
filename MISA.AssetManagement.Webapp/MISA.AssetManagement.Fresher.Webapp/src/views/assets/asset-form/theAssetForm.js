@@ -1,4 +1,3 @@
-// File: @/views/assets/handlers/assetFormLogic.js
 import { ref, computed, watch, nextTick } from 'vue'
 import { validateAssetForm } from '@/utils/validate/validateAssetForm.js'
 
@@ -16,15 +15,19 @@ export function useAssetFormLogic(props, emit) {
   }
 
   function generateAssetCode() {
-    if (props.existingAssetCodes.length === 0) return 'TS000001'
+    if (props.existingAssetCodes.length === 0) return 'TS00001'
+
     const numbers = props.existingAssetCodes
       .map(code => {
         const match = code.match(/\d+$/)
         return match ? parseInt(match[0], 10) : 0
       })
       .filter(n => n > 0)
+
     const maxNumber = Math.max(...numbers, 0)
-    return `TS${String(maxNumber + 1).padStart(6, '0')}`
+
+    // Format với 5 chữ số
+    return `TS${String(maxNumber + 1).padStart(5, '0')}`
   }
 
   function formatCurrency(value) {
@@ -189,9 +192,11 @@ export function useAssetFormLogic(props, emit) {
   }
 
   function handleSubmit() {
+    const shouldCheckDuplicate = props.mode === 'add' || props.mode === 'duplicate'
+
     const { errors: validationErrors, isValid } = validateAssetForm(
       formData.value,
-      props.existingAssetCodes
+      shouldCheckDuplicate ? props.existingAssetCodes : []
     )
 
     if (!isValid) {

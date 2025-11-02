@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:7088/api";
+// Đọc API Base URL từ biến môi trường
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
  * Cấu hình Axios instance chung cho tất cả API
