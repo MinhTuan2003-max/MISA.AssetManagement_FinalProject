@@ -79,7 +79,7 @@ const navItems = [
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 10px 24px;
+  padding: 0 2px 24px;
   flex-shrink: 0;
 }
 

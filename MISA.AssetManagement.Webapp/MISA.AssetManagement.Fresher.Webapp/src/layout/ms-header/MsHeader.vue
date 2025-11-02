@@ -86,6 +86,7 @@ function decreaseYear() {
 </script>
 
 <style scoped>
+/* ========== BASE STYLES (Default cho 1920px) ========== */
 .app-header {
   height: 44px;
   background-color: #fff;
@@ -94,6 +95,7 @@ function decreaseYear() {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 /* LEFT SIDE */
@@ -107,6 +109,7 @@ function decreaseYear() {
   font-weight: 600;
   color: #111;
   margin: 0;
+  transition: font-size 0.3s ease;
 }
 
 /* RIGHT SIDE */
@@ -114,6 +117,7 @@ function decreaseYear() {
   display: flex;
   align-items: center;
   gap: 20px;
+  transition: gap 0.3s ease;
 }
 
 /* THÔNG TIN NĂM THEO DÕI */
@@ -121,6 +125,7 @@ function decreaseYear() {
   display: flex;
   align-items: center;
   gap: 20px;
+  transition: gap 0.3s ease;
 }
 
 .app-content {
@@ -129,6 +134,7 @@ function decreaseYear() {
   color: #111;
   margin: 0;
   white-space: nowrap;
+  transition: font-size 0.3s ease;
 }
 
 /* INPUT NĂM THEO DÕI */
@@ -143,12 +149,14 @@ function decreaseYear() {
   padding: 0 4px 0 8px;
   position: relative;
   font-family: inherit;
+  transition: all 0.3s ease;
 }
 
 .year-prefix {
   font-size: 13px;
   color: #111;
   white-space: nowrap;
+  transition: font-size 0.3s ease;
 }
 
 .year-input input {
@@ -163,6 +171,7 @@ function decreaseYear() {
   padding: 0;
   width: 50px;
   height: 16px;
+  transition: font-size 0.3s ease;
 }
 
 /* Ẩn nút mặc định của input[type=number] */
@@ -170,6 +179,10 @@ function decreaseYear() {
 .year-input input::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.year-input input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .year-input input:focus {
@@ -198,6 +211,11 @@ function decreaseYear() {
   background-repeat: no-repeat;
   background-size: contain;
   padding: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.year-btn:hover {
+  opacity: 0.7;
 }
 
 .year-btn.up {
@@ -213,6 +231,7 @@ function decreaseYear() {
   display: flex;
   align-items: center;
   gap: 20px;
+  transition: gap 0.3s ease;
 }
 
 .icon-action {
@@ -222,6 +241,11 @@ function decreaseYear() {
   cursor: pointer;
   width: 24px;
   height: 24px;
+  transition: all 0.2s ease;
+}
+
+.icon-action:hover {
+  opacity: 0.7;
 }
 
 .icon-action.avatar-group {
@@ -244,6 +268,7 @@ function decreaseYear() {
 /* ICON ĐỊNH DẠNG CHUNG */
 .icon {
   display: inline-block;
+  transition: all 0.3s ease;
 }
 
 .bell-icon,
@@ -259,15 +284,143 @@ function decreaseYear() {
   height: 8px;
 }
 
-/* ========== RESPONSIVE DESIGN ========== */
-
-/* Breakpoint Mobile: < 576px */
-@media (max-width: 575.98px) {
+@media (max-width: 1368px) {
   .app-header {
-    height: 50px;
-    padding: 0 12px;
+    height: 42px;
+    padding: 0 16px;
+  }
+
+  .app-title {
+    font-size: 17px;
+  }
+
+  .header-right {
+    gap: 16px;
+  }
+
+  .header-info-group {
+    gap: 16px;
+  }
+
+  .app-content {
+    font-size: 15px;
+  }
+
+  .year-input {
+    width: 106px;
+    height: 28px;
+    padding: 0 4px 0 7px;
+    gap: 5px;
+  }
+
+  .year-prefix {
+    font-size: 12px;
+  }
+
+  .year-input input {
+    font-size: 12px;
+    width: 48px;
+    height: 15px;
+  }
+
+  .icons-group {
+    gap: 16px;
+  }
+
+  .icon-action {
+    width: 22px;
+    height: 22px;
+  }
+
+  .bell-icon,
+  .show-list-icon,
+  .question-icon,
+  .avatar-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .down-icon {
+    width: 7px;
+    height: 7px;
+  }
+
+  .year-btn {
+    width: 6px;
+    height: 4px;
+    padding: 3px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .app-header {
+    height: 40px;
+    padding: 0 14px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+
+  .header-right {
+    gap: 14px;
+  }
+
+  .header-info-group {
+    gap: 14px;
+  }
+
+  .app-content {
+    font-size: 14px;
+  }
+
+  .year-input {
+    width: 100px;
+    height: 26px;
+    padding: 0 3px 0 6px;
+    gap: 4px;
+  }
+
+  .year-prefix {
+    font-size: 11px;
+  }
+
+  .year-input input {
+    font-size: 11px;
+    width: 45px;
+    height: 14px;
+  }
+
+  .icons-group {
+    gap: 14px;
+  }
+
+  .icon-action {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bell-icon,
+  .show-list-icon,
+  .question-icon,
+  .avatar-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .down-icon {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .app-header {
+    height: auto;
+    min-height: 40px;
+    padding: 8px 12px;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
   }
 
   .header-left {
@@ -276,8 +429,7 @@ function decreaseYear() {
   }
 
   .app-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 15px;
   }
 
   .header-right {
@@ -288,174 +440,118 @@ function decreaseYear() {
   }
 
   .header-info-group {
-    gap: 12px;
+    gap: 10px;
     flex: 1;
     min-width: 0;
   }
 
   .app-content {
-    font-size: 14px;
-    min-width: 0;
+    font-size: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100px;
   }
 
   .year-input {
-    width: 100px;
-    height: 28px;
+    width: 95px;
+    height: 26px;
     padding: 0 3px 0 6px;
     gap: 4px;
   }
 
   .year-prefix {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .year-input input {
-    width: 45px;
-    font-size: 12px;
+    font-size: 11px;
+    width: 42px;
     height: 14px;
   }
 
   .icons-group {
-    gap: 14px;
+    gap: 12px;
     flex-shrink: 0;
   }
 
   .icon-action {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .bell-icon,
   .show-list-icon,
   .question-icon,
   .avatar-icon {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .down-icon {
+    width: 6px;
+    height: 6px;
+  }
+
+  .year-btn {
+    width: 5px;
+    height: 3px;
+    padding: 3px;
   }
 }
 
-/* Breakpoint Tablet: 576px - 768px */
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (max-width: 479.98px) {
   .app-header {
-    height: 48px;
-    padding: 0 16px;
-    gap: 16px;
+    padding: 6px 10px;
   }
 
   .app-title {
-    font-size: 16px;
-  }
-
-  .header-right {
-    gap: 16px;
-  }
-
-  .header-info-group {
-    gap: 16px;
-  }
-
-  .app-content {
     font-size: 14px;
   }
 
-  .year-input {
-    width: 105px;
-    height: 30px;
-  }
-
-  .year-prefix {
-    font-size: 12px;
-  }
-
-  .year-input input {
-    width: 48px;
-    font-size: 12px;
-  }
-
-  .icons-group {
-    gap: 16px;
-  }
-
-  .icon-action {
-    width: 22px;
-    height: 22px;
-  }
-
-  .bell-icon,
-  .show-list-icon,
-  .question-icon,
-  .avatar-icon {
-    width: 22px;
-    height: 22px;
-  }
-}
-
-/* Breakpoint Desktop: >= 768px */
-@media (min-width: 768px) {
-  .app-header {
-    height: 44px;
-    padding: 0 20px;
-    flex-wrap: nowrap;
-  }
-
-  .header-left {
-    width: auto;
-  }
-
-  .header-right {
-    gap: 20px;
-  }
-
-  .header-info-group {
-    gap: 20px;
-  }
-
   .app-content {
-    font-size: 16px;
-  }
-
-  .year-input {
-    width: 112px;
-    height: 30px;
-  }
-
-  .icons-group {
-    gap: 20px;
-  }
-}
-
-/* Smooth transitions */
-@media (max-width: 575.98px) {
-  .app-header {
-    height: 70px;
-    padding: 5px 5px;
-  }
-
-  .app-header,
-  .app-title,
-  .app-content,
-  .year-input,
-  .icons-group {
-    transition: all 0.3s ease;
-  }
-}
-
-/* Mobile: Ẩn tên đơn vị nếu space quá hẹp */
-@media (max-width: 480px) {
-  .app-content {
-    font-size: 13px;
+    font-size: 12px;
     max-width: 80px;
   }
 
-  .header-info-group {
-    gap: 8px;
+  .year-input {
+    width: 90px;
+    height: 24px;
+  }
+
+  .year-prefix {
+    font-size: 10px;
+  }
+
+  .year-input input {
+    font-size: 10px;
+    width: 40px;
   }
 
   .icons-group {
     gap: 10px;
   }
+
+  .icon-action {
+    width: 18px;
+    height: 18px;
+  }
+
+  .bell-icon,
+  .show-list-icon,
+  .question-icon,
+  .avatar-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .down-icon {
+    width: 5px;
+    height: 5px;
+  }
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>
-

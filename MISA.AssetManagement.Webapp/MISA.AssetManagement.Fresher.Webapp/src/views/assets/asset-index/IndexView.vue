@@ -608,7 +608,7 @@ async function handleExportExcel() {
   .filter-group { gap: 6px; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1144px) {
   .toolbar { flex-direction: column; align-items: stretch; }
   .toolbar-left, .toolbar-right { width: 100%; justify-content: space-between; }
   .filter-group { flex-wrap: wrap; }
@@ -621,9 +621,7 @@ async function handleExportExcel() {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    padding: 8px;
   }
-
   .toolbar-left {
     flex: 1;
     flex-direction: column;
@@ -639,6 +637,10 @@ async function handleExportExcel() {
     flex-wrap: wrap;
     gap: 6px;
     margin-left: 0;
+  }
+
+  .base-filter-btn {
+    width: 113%;
   }
 
   .toolbar-right {
@@ -687,7 +689,6 @@ async function handleExportExcel() {
 @media (min-width: 576px) and (max-width: 991.98px) {
   .toolbar {
     gap: 10px;
-    padding: 10px;
   }
 
   .toolbar-left {

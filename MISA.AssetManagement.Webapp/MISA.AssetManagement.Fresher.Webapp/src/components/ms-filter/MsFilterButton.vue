@@ -250,4 +250,16 @@ onUnmounted(() => {
 .dropdown-menu::-webkit-scrollbar-track {
   background-color: #f1f3f5;
 }
+
+@media (max-width: 575.98px) {
+  .base-filter-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 546px) {
+  .base-filter-btn {
+    width: 113%;
+  }
+}
 </style>
