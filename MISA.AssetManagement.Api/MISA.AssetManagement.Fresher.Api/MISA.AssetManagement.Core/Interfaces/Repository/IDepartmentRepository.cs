@@ -5,6 +5,7 @@ namespace MISA.Core.Interfaces.Repository
 
     /// <summary>
     /// Interface repository cho bộ phận
+    /// CreatedBy: HMTuan (28/10/2025)
     /// </summary>
     public interface IDepartmentRepository : IBaseRepository<Department>
     {

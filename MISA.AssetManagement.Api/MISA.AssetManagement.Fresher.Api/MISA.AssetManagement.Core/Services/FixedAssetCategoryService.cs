@@ -13,6 +13,12 @@ namespace MISA.Core.Services
     {
         private readonly IFixedAssetCategoryRepository _repository;
 
+        /// <summary>
+        /// Hàm khởi tạo (constructor) cho lớp FixedAssetCategoryService.
+        /// Dùng để gán repository tương ứng và kế thừa logic xử lý từ BaseService.
+        /// CreatedBy: HMTuan (29/10/2025)
+        /// </summary>
+        /// <param name="repository">Đối tượng repository dùng để thao tác dữ liệu của FixedAssetCategory trong tầng dữ liệu.</param>
         public FixedAssetCategoryService(IFixedAssetCategoryRepository repository)
             : base(repository)
         {
@@ -20,8 +26,12 @@ namespace MISA.Core.Services
         }
 
         /// <summary>
-        /// Ghi đè ValidateBeforeCreate nếu cần kiểm tra dữ liệu trước khi thêm
+        /// Ghi đè phương thức ValidateBeforeCreate để kiểm tra tính hợp lệ của dữ liệu trước khi thêm mới loại tài sản.
+        /// Thực hiện kiểm tra bắt buộc các trường thông tin như mã loại tài sản và tên loại tài sản.
+        /// CreatedBy: HMTuan (29/10/2025)
         /// </summary>
+        /// <param name="entity">Đối tượng FixedAssetCategory cần được kiểm tra trước khi thêm vào cơ sở dữ liệu.</param>
+        /// <exception cref="MISA.Core.Exceptions.ValidateException">Ném ra nếu mã loại tài sản hoặc tên loại tài sản bị để trống.</exception>
         protected override void ValidateBeforeCreate(FixedAssetCategory entity)
         {
             if (string.IsNullOrEmpty(entity.FixedAssetCategoryCode))

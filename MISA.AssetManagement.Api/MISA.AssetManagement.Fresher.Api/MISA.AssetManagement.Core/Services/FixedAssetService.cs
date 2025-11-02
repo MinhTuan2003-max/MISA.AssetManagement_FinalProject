@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MISA.Core.DTOs;
+using MISA.Core.Entities;
+using MISA.Core.Exceptions;
+using MISA.Core.Interfaces;
+using MISA.Core.Interfaces.Repository;
+using MISA.Core.Interfaces.Service;
+using System.Text.RegularExpressions;
 
 namespace MISA.Core.Services
 {
-    using MISA.Core.DTOs;
-    using MISA.Core.Entities;
-    using MISA.Core.Exceptions;
-    using MISA.Core.Interfaces;
-    using MISA.Core.Interfaces.Repository;
-    using MISA.Core.Interfaces.Service;
-    using System.Text.RegularExpressions;
-
     /// <summary>
     /// Service xử lý nghiệp vụ tài sản cố định
     /// CreatedBy: HMTuan (28/10/2025)

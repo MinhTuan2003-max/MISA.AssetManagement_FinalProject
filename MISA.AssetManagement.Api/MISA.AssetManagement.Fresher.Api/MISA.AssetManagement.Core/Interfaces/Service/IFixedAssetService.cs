@@ -5,6 +5,7 @@ namespace MISA.Core.Interfaces.Service
 {
     /// <summary>
     /// Interface service cho tài sản cố định
+    /// CreatedBy: HMTuan (28/10/2025)
     /// </summary>
     public interface IFixedAssetService : IBaseService<FixedAsset>
     {

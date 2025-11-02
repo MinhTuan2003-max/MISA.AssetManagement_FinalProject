@@ -5,6 +5,7 @@ namespace MISA.Core.Interfaces.Repository
 {
     /// <summary>
     /// Interface repository cho tài sản cố định
+    /// CreatedBy: HMTuan (28/10/2025)
     /// </summary>
     public interface IFixedAssetRepository : IBaseRepository<FixedAsset>
     {

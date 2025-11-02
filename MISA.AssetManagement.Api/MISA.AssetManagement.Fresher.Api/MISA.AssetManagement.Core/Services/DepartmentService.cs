@@ -13,6 +13,12 @@ namespace MISA.Core.Services
     {
         private readonly IDepartmentRepository _repository;
 
+        /// <summary>
+        /// Hàm khởi tạo (constructor) cho lớp DepartmentService.
+        /// Dùng để gán repository tương ứng và kế thừa logic xử lý từ BaseService.
+        /// CreatedBy: HMTuan (29/10/2025)
+        /// </summary>
+        /// <param name="repository">Đối tượng repository dùng để thao tác dữ liệu của Department trong tầng dữ liệu.</param>
         public DepartmentService(IDepartmentRepository repository)
             : base(repository)
         {
@@ -20,8 +26,11 @@ namespace MISA.Core.Services
         }
 
         /// <summary>
-        /// Ghi đè ValidateBeforeCreate để kiểm tra dữ liệu trước khi thêm
+        /// Ghi đè ValidateBeforeCreate nếu cần kiểm tra dữ liệu trước khi thêm
+        /// CreatedBy: HMTuan (29/10/2025)
         /// </summary>
+        /// <param name="entity">Đối tượng Department cần được kiểm tra trước khi thêm vào cơ sở dữ liệu.</param>
+        /// <exception cref="MISA.Core.Exceptions.ValidateException"></exception>
         protected override void ValidateBeforeCreate(Department entity)
         {
             if (string.IsNullOrEmpty(entity.DepartmentCode))

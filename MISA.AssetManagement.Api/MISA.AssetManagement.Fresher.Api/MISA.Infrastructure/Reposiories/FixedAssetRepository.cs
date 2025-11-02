@@ -39,20 +39,21 @@ namespace MISA.Infrastructure.Reposiories
                         string newCode;
                         if (lastAsset == null)
                         {
-                            newCode = "TS000001";
+                            newCode = "TS00001";
                         }
                         else
                         {
                             var lastCode = (string)lastAsset.fixed_asset_code;
-                            var numberPart = lastCode.Substring(2);
+                            var numberPart = lastCode.Substring(2); // Cắt "TS" ra
 
                             if (int.TryParse(numberPart, out int lastNumber))
                             {
-                                newCode = $"TS{(lastNumber + 1):D6}";
+                                // Format với 5 chữ số (D5)
+                                newCode = $"TS{(lastNumber + 1):D5}";
                             }
                             else
                             {
-                                newCode = "TS000001";
+                                newCode = "TS00001";
                             }
                         }
 
@@ -189,7 +190,7 @@ namespace MISA.Infrastructure.Reposiories
                 var totalRecords = connection.ExecuteScalar<int>(countSql, parameters);
 
                 // Phân trang
-                sql.Append("ORDER BY fa.created_date DESC ");
+                sql.Append("ORDER BY fa.fixed_asset_code DESC ");
                 sql.Append("LIMIT @PageSize OFFSET @Offset");
 
                 var offset = (filter.PageNumber - 1) * filter.PageSize;

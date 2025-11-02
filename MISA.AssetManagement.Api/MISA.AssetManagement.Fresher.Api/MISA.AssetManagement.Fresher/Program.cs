@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // Đăng ký Connection String
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=localhost;Port=3306;Database=misa_fixed_asset_management;User Id=root;Password=123456;";
+    ?? "Host=localhost;Port=3306;Database=misa_fixed_asset_management_development;User Id=root;Password=123456;";
 
 // Đăng ký Repositories
 builder.Services.AddScoped<IDepartmentRepository>(provider =>
