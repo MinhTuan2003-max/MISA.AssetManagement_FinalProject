@@ -2,6 +2,8 @@ import { ref } from 'vue'
 
 /**
  * Quản lý toast notifications
+ * @return các thông báo liên quan đến toast kèm độ dài của hiển thị toast
+ * CreatedBy: HMTuan (15/10/2025)
  */
 export function useToastManager() {
   const toasts = ref([])

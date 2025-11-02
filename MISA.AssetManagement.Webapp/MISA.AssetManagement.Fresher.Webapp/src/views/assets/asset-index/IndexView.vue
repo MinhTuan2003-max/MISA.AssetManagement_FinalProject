@@ -165,6 +165,12 @@
 </template>
 
 <script setup>
+/**
+ * @fileoverview Màn hình quản lý tài sản - xử lý logic chính
+ * Kết hợp hiển thị danh sách tài sản, bộ lọc, form popup, và các dialog xác nhận.
+ * CreatedBy: HMTuan ( 01/11/2025)
+ */
+
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useFixedAssets } from '@/composables/useFixedAssets.js'
 import { useAssetHandlers } from './indexView.js'
@@ -182,8 +188,14 @@ import BaseDialog from '@/components/ms-dialog/MsDialog.vue'
 import TheAssetForm from '@/views/assets/asset-form/TheAssetForm.vue'
 import MsToastNotification from '@/components/ms-toast/MsToast.vue'
 
-//#region Composables
+// #region Composable
+
+/**
+ * Composable quản lý dữ liệu tài sản (state + logic API)
+ */
 const fixedAssetsComposable = useFixedAssets()
+
+// Destructure các state và hàm từ composable useFixedAssets
 const {
   loading,
   error,
@@ -212,13 +224,20 @@ const {
   handleSearch
 } = fixedAssetsComposable
 
+/**
+ * Composable xuất Excel
+ */
 const { exporting, exportFixedAssets } = useExcelExport()
 
-// Toast Manager
+/**
+ * Composable quản lý Toast Notification
+ */
 const toastManager = useToastManager()
 const { toasts, removeToast, toastSuccess, toastError } = toastManager
 
-// Asset Handlers
+/**
+ * Composable xử lý hành động của tài sản (thêm, sửa, xóa, popup, dialog, ...)
+ */
 const handlers = useAssetHandlers(fixedAssetsComposable, toastManager)
 const {
   isPopupOpen,
@@ -245,23 +264,52 @@ const {
   handleSaveChangesNo,
   handleSaveChangesYes
 } = handlers
-//#endregion
+// #endregion
 
-//#region Local State
+
+// #region Local State
+/**
+ * Trạng thái loading bộ lọc (đang lọc dữ liệu)
+ * @type {Ref<boolean>}
+ */
 const isFiltering = ref(false)
+
+/**
+ * Kiểm soát hiển thị bảng (ẩn khi lọc để tránh lag UI)
+ * @type {Ref<boolean>}
+ */
 const showTable = ref(true)
+
+/**
+ * Key để buộc Table re-render lại khi thay đổi bộ lọc hoặc tìm kiếm
+ * @type {Ref<number>}
+ */
 const tableKey = ref(0)
 //#endregion
 
-//#region Lifecycle
+// #region Lifecycle
+
+/**
+ * Khi component được mount:
+ * - Gọi song song load dữ liệu tài sản và bộ lọc
+ */
 onMounted(async () => {
   await Promise.all([loadFixedAssets(), loadFilterOptions()])
 })
 
+/**
+ * Debounce tìm kiếm: Tránh gọi API liên tục khi người dùng gõ nhanh
+ * @param {string} query - Chuỗi tìm kiếm người dùng nhập
+ */
 const debouncedSearch = debounce(async (query) => {
   await handleSearch(query)
 }, 1000)
 
+/**
+ * Theo dõi thay đổi ô tìm kiếm (search bar)
+ * - Hiển thị trạng thái loading tạm thời
+ * - Debounce gọi API tìm kiếm
+ */
 watch(searchQuery, async () => {
   showTable.value = false
   isFiltering.value = true
@@ -272,6 +320,11 @@ watch(searchQuery, async () => {
   showTable.value = true
 })
 
+/**
+ * Theo dõi thay đổi bộ lọc (Loại tài sản / Phòng ban)
+ * - Tạm thời ẩn bảng
+ * - Chờ loading hoàn tất, sau đó re-render bảng
+ */
 watch([filterCategory, filterDepartment], async () => {
   showTable.value = false
   isFiltering.value = true
@@ -292,7 +345,13 @@ watch([filterCategory, filterDepartment], async () => {
 })
 //#endregion
 
+
 //#region Computed
+
+/**
+ * Dữ liệu phân trang cho bảng tài sản
+ * @type {ComputedRef<Object>}
+ */
 const paginationData = computed(() => ({
   totalItems: filteredAssets.value.length,
   currentPage: currentPage.value,
@@ -304,6 +363,10 @@ const paginationData = computed(() => ({
   totalResidual: totalResidual.value
 }))
 
+/**
+ * Nội dung mô tả trong dialog xóa tài sản
+ * @type {ComputedRef<string>}
+ */
 const deleteDialogDescription = computed(() => {
   if (!deleteDialogData.value) return ''
   if (deleteDialogData.value.type === 'single') {
@@ -317,17 +380,31 @@ const deleteDialogDescription = computed(() => {
   return `${count} tài sản đã được chọn. Bạn có muốn xóa các tài sản này ra khỏi danh sách?`
 })
 
+/**
+ * Danh sách button hiển thị trong dialog xóa
+ * @type {ComputedRef<Array>}
+ */
 const deleteDialogButtons = computed(() => [
   { label: 'Không', type: 'cancel', action: handleCancelDelete },
   { label: 'Xóa', type: 'primary', action: confirmDelete }
 ])
-//#endregion
+// #endregion
 
-//#region Other Actions
+
+// #region Other Actions
+
+/**
+ * Xử lý khi click vào một dòng trong bảng tài sản
+ * @param {Object} item - Dữ liệu của dòng được click
+ */
 function handleRowClick(item) {
   console.log('Row clicked:', item)
 }
 
+/**
+ * Xử lý xuất danh sách tài sản ra file Excel
+ * @async
+ */
 async function handleExportExcel() {
   try {
     if (filteredAssets.value.length === 0) {
@@ -343,6 +420,7 @@ async function handleExportExcel() {
 }
 //#endregion
 </script>
+
 
 <style scoped>
 .content-card {

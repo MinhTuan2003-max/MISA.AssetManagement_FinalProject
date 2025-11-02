@@ -3,9 +3,16 @@ import { validateAssetForm } from '@/utils/validate/validateAssetForm.js'
 
 /**
  * Logic xử lý form tài sản
+ * CreatedBy: HMTuan (29/10/2025)
  */
 export function useAssetFormLogic(props, emit) {
   //#region Helper Functions
+
+  /**
+   * Hàm trả về chuỗi ngày hiện tại theo định dạng yyyy-MM-dd
+   * CreatedBy: HMTuan (29/10/2025)
+   * @return {string} Ngày hiện tại (vd: "2025-11-03")
+   */
   function getTodayString() {
     const today = new Date()
     const year = today.getFullYear()
@@ -14,8 +21,13 @@ export function useAssetFormLogic(props, emit) {
     return `${year}-${month}-${day}`
   }
 
+  /**
+   * Hàm sinh mã tài sản mới dựa trên danh sách mã đã có
+   * CreatedBy: HMTuan (29/10/2025)
+   * @return {string} Mã tài sản mới (vd: "TS00001")
+   */
   function generateAssetCode() {
-    if (props.existingAssetCodes.length === 0) return 'TS00001'
+    if (props.existingAssetCodes.length === 0) return 'TS000001'
 
     const numbers = props.existingAssetCodes
       .map(code => {
@@ -27,16 +39,25 @@ export function useAssetFormLogic(props, emit) {
     const maxNumber = Math.max(...numbers, 0)
 
     // Format với 5 chữ số
-    return `TS${String(maxNumber + 1).padStart(5, '0')}`
+    return `TS${String(maxNumber + 1).padStart(6, '0')}`
   }
 
+  /**
+   * Hàm định dạng giá trị tiền tệ theo chuẩn 'vi-VN'
+   * CreatedBy: HMTuan (29/10/2025)
+   * @param {number|string} value - Giá trị cần định dạng
+   * @return {string} Chuỗi tiền tệ đã format
+   */
   function formatCurrency(value) {
     if (value == null || value === '') return ''
     return new Intl.NumberFormat('vi-VN').format(value)
   }
 
   /**
-   * Convert ISO datetime string → yyyy-MM-dd format
+   * Hàm chuyển đổi chuỗi ngày ISO sang định dạng yyyy-MM-dd
+   * CreatedBy: HMTuan (29/10/2025)
+   * @param {string} dateStr - Chuỗi ngày cần chuẩn hóa
+   * @return {string} Ngày hợp lệ dạng yyyy-MM-dd
    */
   function normalizeDateString(dateStr) {
     if (!dateStr) return getTodayString()
@@ -73,18 +94,34 @@ export function useAssetFormLogic(props, emit) {
   //#endregion
 
   //#region Computed
+
+  /**
+   * Computed: Tiêu đề dialog dựa theo chế độ của form (add, duplicate, edit)
+   * CreatedBy: HMTuan (29/10/2025)
+   * @return {string} Tiêu đề của form
+   */
   const dialogTitle = computed(() => {
     if (props.mode === 'add') return 'Thêm tài sản'
     if (props.mode === 'duplicate') return 'Nhân bản tài sản'
     return 'Sửa tài sản'
   })
 
+  /**
+   * Computed: Lấy tên phòng ban dựa trên DepartmentCode được chọn
+   * CreatedBy: HMTuan (29/10/2025)
+   * @return {string} Tên phòng ban tương ứng
+   */
   const departmentName = computed(() => {
     if (!formData.value.DepartmentCode) return ''
     const dept = props.departmentOptions.find(d => d.value === formData.value.DepartmentCode)
     return dept ? dept.fullName : ''
   })
 
+  /**
+   * Computed: Lấy tên loại tài sản dựa trên FixedAssetCategoryCode được chọn
+   * CreatedBy: HMTuan (29/10/2025)
+   * @return {string} Tên loại tài sản tương ứng
+   */
   const categoryName = computed(() => {
     if (!formData.value.FixedAssetCategoryCode) return ''
     const cat = props.categoryOptions.find(c => c.value === formData.value.FixedAssetCategoryCode)
@@ -93,7 +130,11 @@ export function useAssetFormLogic(props, emit) {
   //#endregion
 
   //#region Watchers
-  // Watch isOpen - load data khi mở form
+
+  /**
+   * Watcher: Theo dõi props.isOpen để load hoặc reset dữ liệu khi form mở/đóng
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   watch(() => props.isOpen, async (newVal) => {
     if (newVal) {
       await nextTick()
@@ -109,7 +150,10 @@ export function useAssetFormLogic(props, emit) {
     }
   })
 
-  // Watch category để set LifeTime + DepreciationRate
+  /**
+   * Watcher: Theo dõi FixedAssetCategoryCode để cập nhật LifeTime và DepreciationRate
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   watch(() => formData.value.FixedAssetCategoryCode, (newCode) => {
     if (!newCode) {
       formData.value.LifeTime = 0
@@ -123,7 +167,10 @@ export function useAssetFormLogic(props, emit) {
     }
   })
 
-  // Watch PurchaseDate để set ProductionYear + TrackedYear
+  /**
+   * Watcher: Theo dõi PurchaseDate để cập nhật ProductionYear và TrackedYear
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   watch(() => formData.value.PurchaseDate, (newDate) => {
     if (!newDate) return
     const date = new Date(newDate)
@@ -133,7 +180,10 @@ export function useAssetFormLogic(props, emit) {
     formData.value.TrackedYear = year
   })
 
-  // Watch Cost + DepreciationRate để tính DepreciationValue
+  /**
+   * Watcher: Theo dõi Cost và DepreciationRate để tính DepreciationValue
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   watch([() => formData.value.Cost, () => formData.value.DepreciationRate], ([cost, rate]) => {
     if (cost && rate) {
       formData.value.DepreciationValue = (cost * rate) / 100
@@ -144,6 +194,11 @@ export function useAssetFormLogic(props, emit) {
   //#endregion
 
   //#region Methods
+
+  /**
+   * Hàm reset toàn bộ dữ liệu form về giá trị mặc định
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   function resetForm() {
     const today = getTodayString()
     const currentYear = new Date().getFullYear()
@@ -168,6 +223,11 @@ export function useAssetFormLogic(props, emit) {
     errors.value = {}
   }
 
+  /**
+   * Hàm load dữ liệu ban đầu vào form khi sửa hoặc nhân bản
+   * CreatedBy: HMTuan (29/10/2025)
+   * @param {Object} data - Dữ liệu tài sản ban đầu
+   */
   function loadInitialData(data) {
     if (!data) return
 
@@ -191,6 +251,11 @@ export function useAssetFormLogic(props, emit) {
     formData.value = normalized
   }
 
+  /**
+   * Hàm xử lý khi người dùng nhấn nút lưu form
+   * Thực hiện validate dữ liệu và emit sự kiện submit
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   function handleSubmit() {
     const shouldCheckDuplicate = props.mode === 'add' || props.mode === 'duplicate'
 
@@ -219,10 +284,19 @@ export function useAssetFormLogic(props, emit) {
     emit('submit', submitData)
   }
 
+  /**
+   * Hàm thông báo khi form có sự thay đổi dữ liệu (placeholder)
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   function notifyFormChange() {
     // Local state update - placeholder
   }
 
+  /**
+   * Hàm xử lý khi người dùng hủy hoặc đóng form
+   * Emit sự kiện 'close' và truyền dữ liệu hiện tại của form
+   * CreatedBy: HMTuan (29/10/2025)
+   */
   function handleCancel() {
     emit('close', JSON.parse(JSON.stringify(formData.value)))
   }

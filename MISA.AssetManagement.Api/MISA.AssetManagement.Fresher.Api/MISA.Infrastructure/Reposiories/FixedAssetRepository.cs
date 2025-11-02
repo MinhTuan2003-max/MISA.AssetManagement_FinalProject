@@ -39,7 +39,7 @@ namespace MISA.Infrastructure.Reposiories
                         string newCode;
                         if (lastAsset == null)
                         {
-                            newCode = "TS00001";
+                            newCode = "TS000001";
                         }
                         else
                         {
@@ -48,12 +48,12 @@ namespace MISA.Infrastructure.Reposiories
 
                             if (int.TryParse(numberPart, out int lastNumber))
                             {
-                                // Format với 5 chữ số (D5)
-                                newCode = $"TS{(lastNumber + 1):D5}";
+                                // Format với 5 chữ số (D6)
+                                newCode = $"TS{(lastNumber + 1):D6}";
                             }
                             else
                             {
-                                newCode = "TS00001";
+                                newCode = "TS000001";
                             }
                         }
 
