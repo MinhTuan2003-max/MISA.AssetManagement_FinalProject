@@ -1,7 +1,5 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MISA.Core.Interfaces.Service;
 
