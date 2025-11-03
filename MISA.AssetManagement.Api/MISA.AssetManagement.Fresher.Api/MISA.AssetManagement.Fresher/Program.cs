@@ -6,6 +6,7 @@ using MISA.Core.Interfaces.Repository;
 using MISA.Core.Interfaces.Service;
 using MISA.Core.Services;
 using MISA.Infrastructure.Reposiories;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,15 @@ void ConfigureServices(WebApplicationBuilder builder)
 
     // Connection String
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Host=localhost;Port=3306;Database=misa_fixed_asset_management_development;User Id=root;Password=123456;";
+    ?? throw new InvalidOperationException("DefaultConnection not found in configuration");
+
+    var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
+        ?? throw new InvalidOperationException("Redis connection string not found in configuration");
+
+    var redis = ConnectionMultiplexer.Connect(redisConnectionString);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
+    builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+
 
     // Đăng ký Repository (Data Access Layer)
     builder.Services.AddScoped<IDepartmentRepository>(

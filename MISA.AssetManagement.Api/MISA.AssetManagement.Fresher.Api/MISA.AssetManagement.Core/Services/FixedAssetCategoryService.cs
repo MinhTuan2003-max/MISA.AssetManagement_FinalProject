@@ -11,7 +11,7 @@ namespace MISA.Core.Services
     public class FixedAssetCategoryService
         : BaseService<FixedAssetCategory>, IBaseService<FixedAssetCategory>
     {
-        private readonly IFixedAssetCategoryRepository _repository;
+        private readonly IFixedAssetCategoryRepository _fixedAssetCategoryrepository;
 
         /// <summary>
         /// Hàm khởi tạo (constructor) cho lớp FixedAssetCategoryService.
@@ -22,7 +22,7 @@ namespace MISA.Core.Services
         public FixedAssetCategoryService(IFixedAssetCategoryRepository repository)
             : base(repository)
         {
-            _repository = repository;
+            _fixedAssetCategoryrepository = repository;
         }
 
         /// <summary>

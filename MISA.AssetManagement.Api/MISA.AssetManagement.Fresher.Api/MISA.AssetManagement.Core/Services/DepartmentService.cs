@@ -11,7 +11,7 @@ namespace MISA.Core.Services
     public class DepartmentService
         : BaseService<Department>, IBaseService<Department>
     {
-        private readonly IDepartmentRepository _repository;
+        private readonly IDepartmentRepository _departmentRepository;
 
         /// <summary>
         /// Hàm khởi tạo (constructor) cho lớp DepartmentService.
@@ -22,7 +22,7 @@ namespace MISA.Core.Services
         public DepartmentService(IDepartmentRepository repository)
             : base(repository)
         {
-            _repository = repository;
+            _departmentRepository = repository;
         }
 
         /// <summary>
