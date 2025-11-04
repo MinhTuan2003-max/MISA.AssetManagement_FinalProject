@@ -1,4 +1,3 @@
-# MISA.AssetManagement_FinalProject
 # MISA Asset Management - Docker Quick Start
 
 ## Yêu Cầu
