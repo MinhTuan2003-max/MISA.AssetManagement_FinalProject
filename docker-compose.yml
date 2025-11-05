@@ -1,0 +1,79 @@
+
+services:
+  # =======================
+  # MySQL Database
+  # =======================
+  mysql:
+    image: mysql:8.3
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Linhrio@69
+      MYSQL_DATABASE: misa_fixed_asset_management_development
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - misa_network
+
+  # =======================
+  # Redis cache
+  # =======================
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - misa_network
+
+  # =======================
+  # ⚙️ Backend .NET 8 API
+  # =======================
+  backend:
+    build:
+      context: ./MISA.AssetManagement.Api/MISA.AssetManagement.Fresher.Api
+      dockerfile: MISA.AssetManagement.Fresher/Dockerfile
+    container_name: misa_backend
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=misa_fixed_asset_management_development;User=root;Password=Linhrio@69;
+      - Redis__Host=redis
+      - Redis__Port=6379
+    ports:
+      - "8080:8080"
+    networks:
+      - misa_network
+    restart: unless-stopped
+
+  # =======================
+  # Frontend Nginx
+  # =======================
+  frontend:
+    build:
+      context: ./MISA.AssetManagement.Webapp/MISA.AssetManagement.Fresher.Webapp
+      dockerfile: Dockerfile
+    container_name: misa_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - misa_network
+    restart: unless-stopped
+
+networks:
+  misa_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

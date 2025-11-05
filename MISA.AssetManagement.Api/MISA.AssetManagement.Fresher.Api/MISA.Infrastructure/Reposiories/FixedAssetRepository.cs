@@ -33,7 +33,7 @@ namespace MISA.Infrastructure.Reposiories
                     using (var transaction = connection.BeginTransaction())
                     {
                         // Lock bảng để prevent race condition
-                        var lockSql = "SELECT * FROM fixed_asset ORDER BY created_date DESC LIMIT 1 FOR UPDATE";
+                        var lockSql = "SELECT * FROM fixed_asset ORDER BY fixed_asset_code DESC LIMIT 1 FOR UPDATE";
                         var lastAsset = connection.QueryFirstOrDefault<dynamic>(lockSql, transaction: transaction);
 
                         string newCode;
